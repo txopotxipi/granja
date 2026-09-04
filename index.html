@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Granja Piloño — Granja de cerdos en Galicia | Ignacio, Villa de Cruces</title>
+<meta name="description" content="Granja familiar de Ignacio en Piloño (Villa de Cruces, Pontevedra). Cerdos en establos amplios y luminosos, con la mejor alimentación y pleno cumplimiento del bienestar animal. Carne fresca, embutidos y cerdo por encargo.">
+<meta property="og:title" content="Granja Piloño — Granja de cerdos en Galicia">
+<meta property="og:description" content="Establos amplios, alimentación de primera y bienestar animal certificado en Piloño (Pontevedra). Del corral a tu mesa, sin atajos.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#F2ECDF">
+
+<!-- Tipografías -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Datos estructurados para SEO local (edita con tus datos reales) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Farm",
+  "name": "Granja Piloño — Ignacio",
+  "description": "Granja familiar de cerdos en Piloño, Villa de Cruces (Pontevedra). Establos amplios, alimentación de calidad y pleno cumplimiento de la normativa de bienestar animal.",
+  "telephone": "+34 600 000 000",
+  "email": "hola@granjapilono.es",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Santa María de Piloño",
+    "addressLocality": "Villa de Cruces",
+    "addressCountry": "ES"
+  },
+  "openingHours": "Mo-Fr 09:00-18:00, Sa 09:00-14:00"
+}
+</script>
+
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body id="inicio">
+
+<!-- ============ CABECERA ============ -->
+<header class="header" id="header">
+  <div class="header-in">
+    <a class="logo" href="#inicio" aria-label="Granja Piloño, inicio">
+      <span class="logo-nombre">Piloño</span>
+      <span class="logo-sub">Granja de cerdos · Villa de Cruces</span>
+    </a>
+    <nav class="nav-desk" aria-label="Navegación principal">
+      <a href="#filosofia">Nuestra manera</a>
+      <a href="#productos">Productos</a>
+      <a href="#proceso">El proceso</a>
+      <a href="#finca">La finca</a>
+    </nav>
+    <a href="#contacto" class="btn btn-cta">Hablemos</a>
+    <button class="menu-btn" id="menuBtn" aria-label="Abrir menú" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- Menú móvil -->
+<nav class="menu-movil" id="menuMovil" aria-label="Menú móvil">
+  <a href="#filosofia" style="transition-delay:.08s">Nuestra manera <small>01</small></a>
+  <a href="#productos" style="transition-delay:.14s">Productos <small>02</small></a>
+  <a href="#proceso" style="transition-delay:.2s">El proceso <small>03</small></a>
+  <a href="#finca" style="transition-delay:.26s">La finca <small>04</small></a>
+  <a href="#contacto" style="transition-delay:.32s">Contacto <small>05</small></a>
+  <p class="menu-movil-pie">+34 600 000 000 · hola@granjapilono.es</p>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <p class="hero-etiqueta">Granja familiar · desde 1987</p>
+      <h1 class="hero-titulo reveal">La buena carne<br>nace de una <em>buena vida</em>.</h1>
+      <p class="hero-sub reveal" style="--d:.1s">
+        En Piloño (Pontevedra) criamos cerdos en establos amplios, limpios y
+        luminosos, con la mejor alimentación y todo el cuidado del mundo.
+        Cumplimos la normativa de bienestar animal… y trabajamos cada día
+        para superarla. Esa es toda la receta.
+      </p>
+      <div class="hero-ctas reveal" style="--d:.2s">
+        <a href="#filosofia" class="btn">Conoce la granja
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M17 7H9M17 7v8"/></svg>
+        </a>
+        <a href="#productos" class="link-sub">Ver productos</a>
+      </div>
+    </div>
+
+    <!-- Escenario: cerdo dibujado a trazo + sello -->
+    <div class="escenario reveal" style="--d:.15s" aria-hidden="true">
+      <svg class="anillo" viewBox="0 0 500 500">
+        <circle cx="250" cy="250" r="240" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 13" opacity=".5"/>
+      </svg>
+
+      <div class="cerdo-wrap">
+        <svg class="cerdo" viewBox="0 0 440 320">
+          <g class="trazos" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+            <path pathLength="1" class="p1" d="M138 162c0-40 48-66 116-66 70 0 118 28 118 64 0 36-50 60-120 60-70 0-114-24-114-58z"/>
+            <path pathLength="1" class="p2" d="M182 104c-12-26-2-50 24-56 14 14 14 40 0 56"/>
+            <ellipse pathLength="1" class="p3" cx="130" cy="176" rx="26" ry="18" transform="rotate(-10 130 176)"/>
+            <path pathLength="1" class="p4" d="M178 206v58M216 212v56M290 212v56M326 204v60"/>
+            <path pathLength="1" class="p5" d="M168 266h20M206 270h20M280 270h20M316 266h20"/>
+            <path pathLength="1" class="p6" d="M368 148c22-4 32-22 22-32-8-8-20-2-16 9 3 9 15 8 18-3"/>
+            <path pathLength="1" class="p7" stroke-width="3.5" opacity=".4" d="M132 278c70 12 168 12 238-8"/>
+          </g>
+          <g class="puntos" fill="currentColor">
+            <circle class="ojo" cx="160" cy="136" r="5"/>
+            <circle class="f1" cx="122" cy="172" r="3"/>
+            <circle class="f2" cx="136" cy="176" r="3"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Sello giratorio -->
+      <div class="sello">
+        <svg viewBox="0 0 120 120">
+          <circle class="sello-fondo" cx="60" cy="60" r="58"/>
+          <g class="sello-giro">
+            <defs><path id="aro" d="M60 60m-42 0a42 42 0 1 1 84 0a42 42 0 1 1 -84 0"/></defs>
+            <text><textPath href="#aro">· BIENESTAR ANIMAL · PILOÑO · GALICIA </textPath></text>
+          </g>
+          <path class="ast" d="M60 46v28M46 60h28M50.3 50.3l19.4 19.4M69.7 50.3l-19.4 19.4" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-pie">
+    <span>Registro REGA</span><span class="div"></span>
+    <span>Reparto propio</span><span class="div"></span>
+    <span>Curación natural</span>
+    <a href="#filosofia" class="baja">Desliza
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16m0 0 6-6m-6 6-6-6"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="mq-item">Bienestar animal
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+    </span>
+    <span class="mq-item">Sanidad y control veterinario
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+    </span>
+    <span class="mq-item">Alimentación de primera
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+    </span>
+    <span class="mq-item">Curación artesanal
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+    </span>
+    <span class="mq-item">Trazabilidad total
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+    </span>
+  </div>
+</div>
+
+<!-- ============ 01 · FILOSOFÍA ============ -->
+<section id="filosofia">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <span class="sec-num">(01)</span><span class="sec-label">Nuestra manera</span><span class="relleno"></span>
+    </header>
+    <div class="filo-grid">
+      <div>
+        <h2 class="filo-titulo reveal">Aquí los cerdos viven mejor. <em>Y se nota en el plato.</em></h2>
+        <p class="filo-texto reveal" style="--d:.1s">
+          Nuestra familia lleva casi cuatro décadas criando cerdos en Piloño.
+          Hoy lo hacemos en una granja moderna: establos amplios y luminosos,
+          cama seca y cómoda, ventilación cuidada y espacio de sobra para
+          moverse. Cumplimos toda la normativa de bienestar animal, y cada día
+          intentamos superarla. No hay secretos: hay buen trato, buena comida
+          y respeto por el animal.
+        </p>
+        <a href="#proceso" class="link-sub reveal" style="--d:.15s">Ver cómo trabajamos</a>
+      </div>
+      <div class="parallax filo-foto reveal" style="--d:.2s">
+        <img src="assets/img/filosofia.webp" alt="Cerdos cómodos en los establos de la granja" width="1200" height="900" loading="lazy" decoding="async">
+        <span class="filo-caption">Nuestra granja · Santa María de Piloño</span>
+      </div>
+    </div>
+
+    <ul class="principios">
+      <li class="reveal">
+        <span class="p-num">01</span>
+        <div><h3>Bienestar ante todo</h3>
+        <p>Establos amplios, luminosos y ventilados, con cama seca, agua limpia y espacio de sobra para moverse. Un animal tranquilo es la base de una carne con sabor y textura inigualables.</p></div>
+      </li>
+      <li class="reveal" style="--d:.08s">
+        <span class="p-num">02</span>
+        <div><h3>Comida de primera, siempre</h3>
+        <p>Cereales seleccionados y fórmulas adaptadas a cada etapa de la vida, con agua limpia a libre disposición. Sin atajos: si no es bueno para el animal, no entra en la granja.</p></div>
+      </li>
+      <li class="reveal" style="--d:.16s">
+        <span class="p-num">03</span>
+        <div><h3>Tiempo y trazabilidad</h3>
+        <p>Cada cerdo tiene su lote y su historia. Del nacimiento a tu puerta, sin intermediarios: nosotros criamos, curamos y entregamos.</p></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ CIFRAS ============ -->
+<section class="stats" id="datos" style="padding:0">
+  <div class="wrap" style="padding-block:clamp(60px,8vw,100px)">
+    <div class="stats-grid">
+      <div class="stat reveal"><span class="cifra"><span class="contador" data-objetivo="38">0</span></span><span class="stat-label">Años de oficio</span></div>
+      <div class="stat reveal" style="--d:.08s"><span class="cifra">100<sup>%</sup></span><span class="stat-label">Normativa de bienestar animal, cumplida</span></div>
+      <div class="stat reveal" style="--d:.16s"><span class="cifra"><span class="contador" data-objetivo="60">0</span></span><span class="stat-label">Cerdos criados al año</span></div>
+      <div class="stat reveal" style="--d:.24s"><span class="cifra">24<sup>/7</sup></span><span class="stat-label">Cuidado y vigilancia diaria</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 · PRODUCTOS ============ -->
+<section id="productos">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <span class="sec-num">(02)</span><span class="sec-label">Lo que ofrecemos</span><span class="relleno"></span>
+    </header>
+
+    <article class="prod reveal" data-img="assets/img/prod-carne.webp">
+      <button class="prod-cab" aria-expanded="false">
+        <span class="prod-num">01</span>
+        <h3 class="prod-nombre">Carne fresca</h3>
+        <span class="prod-tag">Reparto 24–48 h</span>
+        <span class="prod-flecha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </button>
+      <div class="prod-body"><div class="prod-inner">
+        <p>Cortes seleccionados envasados al vacío: lomo, secreto, pluma, presa y
+        panceta. Sacrificio en matadero de proximidad y entrega refrigerada en
+        24–48 horas en un radio de 150 km.</p>
+        <div class="prod-pie">
+          <span class="precio">Desde 9 €/kg</span>
+          <button class="btn btn-chico" data-producto="Carne fresca">Pedir información</button>
+        </div>
+      </div></div>
+    </article>
+
+    <article class="prod reveal" data-img="assets/img/prod-embutidos.webp">
+      <button class="prod-cab" aria-expanded="false">
+        <span class="prod-num">02</span>
+        <h3 class="prod-nombre">Embutidos y jamones</h3>
+        <span class="prod-tag">Curación natural</span>
+        <span class="prod-flecha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </button>
+      <div class="prod-body"><div class="prod-inner">
+        <p>Chorizo, lomo, salchichón y jamón curados lentamente en nuestro
+        secadero natural, solo con sal, pimentón y tiempo. Sin conservantes
+        añadidos. Piezas enteras o loncheadas.</p>
+        <div class="prod-pie">
+          <span class="precio">Jamón curado 24 meses</span>
+          <button class="btn btn-chico" data-producto="Embutidos y jamones">Pedir información</button>
+        </div>
+      </div></div>
+    </article>
+
+    <article class="prod reveal" data-img="assets/img/prod-encerdo.webp">
+      <button class="prod-cab" aria-expanded="false">
+        <span class="prod-num">03</span>
+        <h3 class="prod-nombre">Cerdo entero por encargo</h3>
+        <span class="prod-tag">Media o entera</span>
+        <span class="prod-flecha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </button>
+      <div class="prod-body"><div class="prod-inner">
+        <p>La forma más rentable de comprar: media pieza o entera, con el
+        despiece a tu medida y todos los cortes etiquetados. Ideal para familias
+        y para llenar la despensa del año.</p>
+        <div class="prod-pie">
+          <span class="precio">Mejor precio por kg</span>
+          <button class="btn btn-chico" data-producto="Cerdo entero por encargo">Pedir información</button>
+        </div>
+      </div></div>
+    </article>
+
+    <article class="prod reveal" data-img="assets/img/prod-visitas.webp">
+      <button class="prod-cab" aria-expanded="false">
+        <span class="prod-num">04</span>
+        <h3 class="prod-nombre">Ven a conocernos</h3>
+        <span class="prod-tag">Sábados · con reserva</span>
+        <span class="prod-flecha"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span>
+      </button>
+      <div class="prod-body"><div class="prod-inner">
+        <p>Visitas guiadas los sábados por la mañana: recorremos la granja,
+        ves cómo viven los animales —establos amplios, limpieza y cuidado en
+        cada detalle— y terminamos con una degustación de embutidos. Grupos
+        reducidos, apto para familias.</p>
+        <div class="prod-pie">
+          <span class="precio">Degustación incluida</span>
+          <button class="btn btn-chico" data-producto="Visitas a la granja">Reservar visita</button>
+        </div>
+      </div></div>
+    </article>
+  </div>
+</section>
+
+<!-- Imagen flotante para la lista de productos -->
+<div class="flotante" id="flotante" aria-hidden="true">
+  <img src="assets/img/prod-carne.webp" alt="" loading="lazy" decoding="async">
+  <img src="assets/img/prod-embutidos.webp" alt="" loading="lazy" decoding="async">
+  <img src="assets/img/prod-encerdo.webp" alt="" loading="lazy" decoding="async">
+  <img src="assets/img/prod-visitas.webp" alt="" loading="lazy" decoding="async">
+</div>
+
+<!-- ============ 03 · PROCESO ============ -->
+<section id="proceso">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <span class="sec-num">(03)</span><span class="sec-label">De la granja a tu mesa</span><span class="relleno"></span>
+    </header>
+    <div class="proceso-grid">
+      <div class="proceso-foto reveal" id="procesoFoto" aria-hidden="true">
+        <img class="activa" src="assets/img/paso-1.webp" alt="" width="1200" height="675" loading="lazy" decoding="async">
+        <img src="assets/img/paso-2.webp" alt="" width="1200" height="746" loading="lazy" decoding="async">
+        <img src="assets/img/paso-3.webp" alt="" width="800" height="1200" loading="lazy" decoding="async">
+        <img src="assets/img/paso-4.webp" alt="" width="1200" height="800" loading="lazy" decoding="async">
+        <span class="foto-num" id="fotoNum">01</span>
+      </div>
+      <ol class="pasos" id="pasos">
+        <li class="paso activo reveal" data-i="0">
+          <span class="paso-num">01</span>
+          <div><h3>Nacimiento en la granja</h3>
+          <p>Las camadas nacen en parideras amplias y tranquilas, con la madre
+          cómoda y vigilancia diaria. Los lechones crecen con su grupo, sin
+          prisas y con todo lo que necesitan a mano.</p></div>
+        </li>
+        <li class="paso reveal" data-i="1">
+          <span class="paso-num">02</span>
+          <div><h3>Comida buena, cada día</h3>
+          <p>Crecen con piensos de cereales adaptados a cada etapa, agua limpia
+          siempre disponible y mucho espacio para moverse. Sin prisas: cada
+          animal a su ritmo, y así se nota.</p></div>
+        </li>
+        <li class="paso reveal" data-i="2">
+          <span class="paso-num">03</span>
+          <div><h3>Procesado certificado</h3>
+          <p>Sacrificio respetuoso en matadero de proximidad, con control
+          sanitario completo y trazabilidad de cada lote desde la finca.</p></div>
+        </li>
+        <li class="paso reveal" data-i="3">
+          <span class="paso-num">04</span>
+          <div><h3>Curación y entrega</h3>
+          <p>Los embutidos maduran en secadero natural y la carne fresca sale
+          directa a tu casa, en reparto propio refrigerado en 24–48 h.</p></div>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · GALERÍA ============ -->
+<section id="finca">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <span class="sec-num">(04)</span><span class="sec-label">La vida en la finca</span><span class="relleno"></span>
+    </header>
+    <div class="galeria">
+      <figure class="g1 reveal"><img src="assets/img/finca-1.webp" alt="Cerdos cómodos en el establo" width="1200" height="771" loading="lazy" decoding="async"><figcaption>Nuestros establos, impecables</figcaption></figure>
+      <figure class="g2 reveal" style="--d:.08s"><img src="assets/img/finca-2.webp" alt="Los comederos de la granja" width="1200" height="900" loading="lazy" decoding="async"><figcaption>Comederos siempre llenos</figcaption></figure>
+      <figure class="g3 reveal" style="--d:.12s"><img src="assets/img/finca-3.webp" alt="Lechones" width="1200" height="446" loading="lazy" decoding="async"><figcaption>Camada de primavera</figcaption></figure>
+      <figure class="g4 reveal" style="--d:.16s"><img src="assets/img/finca-4.webp" alt="Secadero" width="1200" height="958" loading="lazy" decoding="async"><figcaption>El secadero natural</figcaption></figure>
+      <figure class="g5 reveal" style="--d:.2s"><img src="assets/img/finca-5.webp" alt="Paisaje del monte gallego" width="1200" height="900" loading="lazy" decoding="async"><figcaption>El valle de Villa de Cruces, nuestro hogar</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CITA ============ -->
+<section class="cita">
+  <div class="wrap cita-in reveal">
+    <span class="cita-marca" aria-hidden="true">❞</span>
+    <blockquote>Se nota en la veta de la carne y en el aroma del jamón.
+    No hay ningún misterio: es buen trato y es tiempo. Llevo años cocinando
+    con la Granja Piloño y no cambio.</blockquote>
+    <cite>— Carmen R., cocinera y clienta desde 2012</cite>
+  </div>
+</section>
+
+<!-- ============ 05 · CONTACTO ============ -->
+<section id="contacto">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <span class="sec-num">(05)</span><span class="sec-label">Contacto</span><span class="relleno"></span>
+    </header>
+    <div class="contacto-grid">
+      <div>
+        <h2 class="contacto-titulo reveal">Cuéntanos qué necesitas. <em>Respondemos rápido.</em></h2>
+        <p class="contacto-lead reveal" style="--d:.08s">Pedidos, visitas o simplemente dudas sobre cómo criamos:
+        escríbenos y te contestamos en menos de 24–48 h laborables.</p>
+        <ul class="contacto-datos reveal" style="--d:.14s">
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-5.1-7-11a7 7 0 1 1 14 0c0 5.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <div><strong>Finca</strong>Santa María de Piloño · Villa de Cruces (Pontevedra)</div>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
+            <div><strong>Teléfono y WhatsApp</strong>+34 600 000 000</div>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>
+            <div><strong>Email</strong>hola@granjapilono.es</div>
+          </li>
+          <li>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <div><strong>Horario</strong>L—V 9:00—18:00 · S 9:00—14:00</div>
+          </li>
+        </ul>
+      </div>
+
+      <form class="formulario reveal" style="--d:.1s" id="form" novalidate>
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+          <input type="text" id="nombre" name="nombre" autocomplete="name" placeholder="Tu nombre">
+          <span class="error-msg" aria-live="polite"></span>
+        </div>
+        <div class="campo">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" autocomplete="email" placeholder="tu@correo.com">
+          <span class="error-msg" aria-live="polite"></span>
+        </div>
+        <div class="campo">
+          <label for="asunto">Asunto</label>
+          <select id="asunto" name="asunto">
+            <option>Carne fresca</option>
+            <option>Embutidos y jamones</option>
+            <option>Cerdo entero por encargo</option>
+            <option>Visitas a la granja</option>
+            <option>Otro</option>
+          </select>
+          <span class="error-msg"></span>
+        </div>
+        <div class="campo">
+          <label for="mensaje">Mensaje</label>
+          <textarea id="mensaje" name="mensaje" placeholder="Cuéntanos qué te interesa, cantidades, zona de entrega…"></textarea>
+          <span class="error-msg" aria-live="polite"></span>
+        </div>
+        <div class="campo campo-check">
+          <label class="check-label" for="privacidad">
+            <input type="checkbox" id="privacidad" name="privacidad" required>
+            <span>He leído y acepto la <a href="legal.html#privacidad" target="_blank" rel="noopener">política de privacidad</a>.</span>
+          </label>
+          <span class="error-msg" aria-live="polite"></span>
+        </div>
+        <button type="submit" class="btn">Enviar mensaje
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M17 7H9M17 7v8"/></svg>
+        </button>
+        <!-- Honeypot antispam: invisible para las personas; los bots lo rellenan -->
+        <p class="hp" aria-hidden="true"><label for="web">No rellenes este campo</label><input type="text" id="web" name="web" tabindex="-1" autocomplete="off"></p>
+        <p class="form-nota">Usaremos tus datos solo para responder a este mensaje. Nada de listas ni spam.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-marca">
+        <h2>Piloño<em>.</em></h2>
+        <p>Cerdos criados con mimo en Piloño desde 1987: establos amplios, buena comida y mucho cuidado. La granja de Ignacio, de nuestra familia a tu mesa.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Navegación del pie">
+        <a href="#filosofia">Nuestra manera</a>
+        <a href="#productos">Productos</a>
+        <a href="#proceso">El proceso</a>
+        <a href="#finca">La finca</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
+      <div class="footer-redes">
+        <a href="#" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.3" cy="6.7" r="1.1" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="#" aria-label="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 21v-7h2.4l.4-3h-2.8V9.1c0-.9.3-1.5 1.6-1.5h1.3V4.9c-.3 0-1.1-.1-2-.1-2 0-3.4 1.2-3.4 3.5V11H8.5v3H11v7h2.5z"/></svg>
+        </a>
+        <a href="#" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="13" rx="3.5"/><path d="M10.5 9.8v5.4l4.8-2.7z" fill="currentColor" stroke="none"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-barra">
+      <span>© <span id="anio"></span> Granja Piloño · Todos los derechos reservados</span>
+      <span class="footer-legales">
+        <a href="legal.html#aviso-legal">Aviso Legal</a> · 
+        <a href="legal.html#privacidad">Privacidad</a> · 
+        <a href="legal.html#cookies">Cookies</a>
+      </span>
+      <span>Hecho con calma en Piloño, Pontevedra</span>
+      <a href="#inicio" class="subir">Volver arriba
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V4m0 0-6 6m6-6 6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m8 12.5 2.6 2.6L16 9.5"/></svg>
+  <span id="toastMsg">Mensaje enviado. Te responderemos muy pronto.</span>
+</div>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+﻿# Capturas de pantalla y mockups de diseño locales
+*.png
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores y entornos
+.vscode/
+.idea/
+.claude/
+
+# Python / cachés
+__pycache__/
+*.py[cod]
