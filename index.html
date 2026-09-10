@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="no-js">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,10 +10,18 @@
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#F2ECDF">
 
-<!-- Tipografías -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Favicon: SVG inline con el hocico de la casa (0 peticiones extra) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23BC4B2A'/><ellipse cx='16' cy='16' rx='8' ry='6.5' fill='%23F2ECDF'/><ellipse cx='13' cy='16' rx='1.6' ry='2.6' fill='%23BC4B2A'/><ellipse cx='19' cy='16' rx='1.6' ry='2.6' fill='%23BC4B2A'/></svg>">
+
+<!-- SEO social + canonical · EDITAR granjapilono.es cuando tengas el dominio real -->
+<meta property="og:url" content="https://granjapilono.es/">
+<meta property="og:image" content="https://granjapilono.es/assets/img/filosofia.webp">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://granjapilono.es/">
+
+<!-- Fuentes autohospedadas en assets/fonts/ (se cargan desde assets/css/style.css) -->
+<script>document.documentElement.classList.replace('no-js','js')</script>
 
 <!-- Datos estructurados para SEO local (edita con tus datos reales) -->
 <script type="application/ld+json">
@@ -37,6 +45,7 @@
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body id="inicio">
+<a class="salto" href="#contenido">Saltar al contenido</a>
 
 <!-- ============ CABECERA ============ -->
 <header class="header" id="header">
@@ -69,7 +78,7 @@
 </nav>
 
 <!-- ============ HERO ============ -->
-<section class="hero">
+<section class="hero" id="contenido">
   <div class="hero-inner">
     <div>
       <p class="hero-etiqueta">Granja familiar · desde 1987</p>
@@ -207,9 +216,9 @@
 <section class="stats" id="datos" style="padding:0">
   <div class="wrap" style="padding-block:clamp(60px,8vw,100px)">
     <div class="stats-grid">
-      <div class="stat reveal"><span class="cifra"><span class="contador" data-objetivo="38">0</span></span><span class="stat-label">Años de oficio</span></div>
+      <div class="stat reveal"><span class="cifra"><span class="contador" data-objetivo="38">38</span></span><span class="stat-label">Años de oficio</span></div>
       <div class="stat reveal" style="--d:.08s"><span class="cifra">100<sup>%</sup></span><span class="stat-label">Normativa de bienestar animal, cumplida</span></div>
-      <div class="stat reveal" style="--d:.16s"><span class="cifra"><span class="contador" data-objetivo="60">0</span></span><span class="stat-label">Cerdos criados al año</span></div>
+      <div class="stat reveal" style="--d:.16s"><span class="cifra"><span class="contador" data-objetivo="60">60</span></span><span class="stat-label">Cerdos criados al año</span></div>
       <div class="stat reveal" style="--d:.24s"><span class="cifra">24<sup>/7</sup></span><span class="stat-label">Cuidado y vigilancia diaria</span></div>
     </div>
   </div>

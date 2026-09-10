@@ -9,10 +9,12 @@ granja-cerdos/
 ├── index.html          → Estructura y contenido de la página principal
 ├── legal.html          → Aviso legal, Política de Privacidad (RGPD) y Cookies
 ├── enviar.php          → Recepción y validación del formulario de contacto
+├── robots.txt          → Autoriza a los buscadores a indexar la web
 ├── README.md           → Este archivo
 └── assets/
-    ├── css/style.css   → Todos los estilos (diseño, animaciones, responsive, accesibilidad)
+    ├── css/style.css   → Todos los estilos + @font-face de las fuentes locales
     ├── js/main.js      → Interacciones (menú, reveals, contadores, formulario con RGPD…)
+    ├── fonts/          → Fraunces y Archivo en WOFF2 variable (autohospedadas)
     └── img/            → 14 fotografías optimizadas en WebP de última generación
 ```
 
@@ -44,13 +46,15 @@ Cualquier hosting básico sirve (Hostinger, IONOS, Piensa Solutions, OVH…):
 |---|---|
 | Teléfono real (ahora `+34 600 000 000`) | `index.html` (2 sitios), JSON-LD |
 | Email real (ahora `hola@granjapilono.es`) | `index.html`, `enviar.php` |
+| Dominio real (ahora placeholder `https://granjapilono.es/`) | `index.html`: `canonical`, `og:url`, `og:image` |
 | Fotos reales de la granja | Sobreescribe los `.webp` de `assets/img/` manteniendo los mismos nombres |
 | Coordenadas GPS para el SEO local | Bloque JSON-LD en `index.html` (añadir `"geo"`) |
 
 ## Rendimiento
 
-- 0 librerías, 0 frameworks: HTML + CSS + JS puros (~55 KB de código).
-- Fuentes de Google con `preconnect` e `display=swap`.
+- 0 librerías, 0 frameworks, **0 dependencias externas**: HTML + CSS + JS puros (~55 KB) + 3 fuentes WOFF2 (~180 KB).
+- Fuentes Fraunces y Archivo **autohospedadas** en `assets/fonts/` (WOFF2 variable): sin peticiones a Google, más velocidad, privacidad RGPD y funciona sin conexión.
+- Favicon SVG inline en el `<head>`: identidad en la pestaña sin ni una petición extra.
 - Todas las imágenes `loading="lazy"` + `decoding="async"` + `width/height` explícitos (sin saltos de layout).
 - Animaciones solo con `transform`/`opacity` (aceleradas por GPU) y `prefers-reduced-motion` respetado.
-- Si algún día quieres 100/100 sin conexión externa: descarga las fuentes Fraunces y Archivo a `assets/fonts/` y elimina las 3 líneas de Google Fonts del `<head>`.
+- Sin JavaScript la página es 100 % legible: fallback `.no-js` deja los reveals visibles y los contadores muestran su cifra real.

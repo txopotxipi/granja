@@ -48,7 +48,7 @@ const ioCont = new IntersectionObserver(entradas => {
     if(e.isIntersecting){ animarContador(e.target); ioCont.unobserve(e.target); }
   });
 }, {threshold:.6});
-document.querySelectorAll('.contador').forEach(el => ioCont.observe(el));
+document.querySelectorAll('.contador').forEach(el => { el.textContent = '0'; ioCont.observe(el); });
 
 /* --- Parallax sutil en imágenes --- */
 const parallaxs = document.querySelectorAll('.parallax img');
