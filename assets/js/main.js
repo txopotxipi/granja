@@ -180,3 +180,25 @@ formulario.addEventListener('submit', e => {
 
 /* --- Año dinámico --- */
 document.getElementById('anio').textContent = new Date().getFullYear();
+
+/* --- Anti-bot: marca de llegada al formulario (se lee en enviar.php) --- */
+document.getElementById('form_inicio').value = String(Date.now());
+
+/* --- Móvil: miniatura del producto dentro del acordeón abierto.
+   En escritorio la imagen flotante sigue al cursor; en pantallas táctiles
+   no hay hover, así que mostramos una foto fija para que el producto se vea. --- */
+const movil = matchMedia('(hover:none), (pointer:coarse)').matches;
+if(movil){
+  productos.forEach(prod => {
+    const src = prod.dataset.img;
+    const mini = document.createElement('img');
+    mini.className = 'prod-mini';
+    mini.src = src;
+    mini.alt = '';
+    mini.loading = 'lazy';
+    mini.decoding = 'async';
+    mini.width = 1200; mini.height = 900;
+    const cuerpo = prod.querySelector('.prod-inner');
+    cuerpo.insertBefore(mini, cuerpo.firstChild);
+  });
+}

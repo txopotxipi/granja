@@ -237,6 +237,8 @@ body.sin-scroll{overflow:hidden}
 .prod-inner p{max-width:62ch;color:var(--tinta-2);padding-left:82px}
 .prod-pie{display:flex;align-items:center;gap:26px;flex-wrap:wrap;padding:20px 0 32px 82px}
 .precio{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--teja)}
+/* Miniatura del producto para móvil (solo visible sin hover) */
+.prod-mini{display:none}
 
 /* Imagen flotante que sigue al cursor */
 .flotante{
@@ -408,6 +410,9 @@ body.sin-scroll{overflow:hidden}
   .principios li{grid-template-columns:1fr;gap:6px}
   .flotante{display:none}
   .toast{right:12px;bottom:12px}
+  /* En móvil la imagen flotante no existe: mostramos foto fija del producto */
+  .prod-mini{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin:4px 0 16px}
+  .prod-inner p,.prod-pie{padding-left:0}
 }
 
 /* Menos movimiento (accesibilidad) */

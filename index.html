@@ -308,10 +308,10 @@
 
 <!-- Imagen flotante para la lista de productos -->
 <div class="flotante" id="flotante" aria-hidden="true">
-  <img src="assets/img/prod-carne.webp" alt="" loading="lazy" decoding="async">
-  <img src="assets/img/prod-embutidos.webp" alt="" loading="lazy" decoding="async">
-  <img src="assets/img/prod-encerdo.webp" alt="" loading="lazy" decoding="async">
-  <img src="assets/img/prod-visitas.webp" alt="" loading="lazy" decoding="async">
+  <img src="assets/img/prod-carne.webp" alt="Cortes de carne fresca de cerdo envasados al vacío" loading="lazy" decoding="async">
+  <img src="assets/img/prod-embutidos.webp" alt="Chorizo y embutidos curados de la granja" loading="lazy" decoding="async">
+  <img src="assets/img/prod-encerdo.webp" alt="Cerdo entero por encargo para despiece" loading="lazy" decoding="async">
+  <img src="assets/img/prod-visitas.webp" alt="Visita guiada a la granja de cerdos" loading="lazy" decoding="async">
 </div>
 
 <!-- ============ 03 · PROCESO ============ -->
@@ -322,10 +322,10 @@
     </header>
     <div class="proceso-grid">
       <div class="proceso-foto reveal" id="procesoFoto" aria-hidden="true">
-        <img class="activa" src="assets/img/paso-1.webp" alt="" width="1200" height="675" loading="lazy" decoding="async">
-        <img src="assets/img/paso-2.webp" alt="" width="1200" height="746" loading="lazy" decoding="async">
-        <img src="assets/img/paso-3.webp" alt="" width="800" height="1200" loading="lazy" decoding="async">
-        <img src="assets/img/paso-4.webp" alt="" width="1200" height="800" loading="lazy" decoding="async">
+        <img class="activa" src="assets/img/paso-1.webp" alt="Lechones recién nacidos en la paridera de la granja" width="1200" height="675" loading="lazy" decoding="async">
+        <img src="assets/img/paso-2.webp" alt="Cerdos comiendo pienso de cereales en el establo" width="1200" height="746" loading="lazy" decoding="async">
+        <img src="assets/img/paso-3.webp" alt="Control sanitario y trazabilidad en el matadero" width="800" height="1200" loading="lazy" decoding="async">
+        <img src="assets/img/paso-4.webp" alt="Embutidos curando en el secadero natural" width="1200" height="800" loading="lazy" decoding="async">
         <span class="foto-num" id="fotoNum">01</span>
       </div>
       <ol class="pasos" id="pasos">
@@ -457,6 +457,8 @@
         </button>
         <!-- Honeypot antispam: invisible para las personas; los bots lo rellenan -->
         <p class="hp" aria-hidden="true"><label for="web">No rellenes este campo</label><input type="text" id="web" name="web" tabindex="-1" autocomplete="off"></p>
+        <!-- Marca de tiempo del formulario (anti-bot por velocidad) -->
+        <input type="hidden" name="form_inicio" id="form_inicio" value="">
         <p class="form-nota">Usaremos tus datos solo para responder a este mensaje. Nada de listas ni spam.</p>
       </form>
     </div>

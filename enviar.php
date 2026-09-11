@@ -20,6 +20,37 @@ if (!empty($_POST['web'])) {
   exit;
 }
 
+// Anti-spam por tasa: máximo 5 envíos por IP cada 10 minutos.
+// El formulario es público; esto frena a los bots que rellenan el
+// honeypot en bucle (aunque fallen la validación) sin molestar a
+// una persona real que ensaya el formulario un par de veces.
+@mkdir(__DIR__ . '/tmp-log', 0755, true);
+$fichero = __DIR__ . '/tmp-log/limite-' . md5($_SERVER['REMOTE_ADDR'] ?? 'anon') . '.tmp';
+$ventana  = 600;   // 10 minutos
+$maximo   = 5;     // envíos permitidos en esa ventana
+$ahora    = time();
+$intentos = array_values(array_filter(
+    array_map('intval', file_exists($fichero) ? (array) json_decode((string) @file_get_contents($fichero), true) : []),
+    fn($t) => $t > $ahora - $ventana
+));
+if (count($intentos) >= $maximo) {
+    // 429 sin dar pistas al bot.
+    http_response_code(429);
+    echo json_encode(['ok' => false, 'error' => 'Demasiados envíos seguidos. Espera unos minutos o escríbenos por email.']);
+    exit;
+}
+$intentos[] = $ahora;
+@file_put_contents($fichero, json_encode($intentos), LOCK_EX);
+
+// Guardas de velocidad: si el formulario se rellenó en menos de 2,5 s
+// es casi seguro un bot (un humano tarda más en leer y escribir).
+// form_inicio llega en milisegundos (Date.now()), time() está en segundos.
+if (!empty($_POST['form_inicio']) && ($ahora - (int) ($_POST['form_inicio'] / 1000)) < 2.5) {
+    http_response_code(429);
+    echo json_encode(['ok' => false, 'error' => 'Envío demasiado rápido. Vuelve a intentarlo.']);
+    exit;
+}
+
 $nombre      = trim($_POST['nombre']      ?? '');
 $email       = trim($_POST['email']       ?? '');
 $asunto      = trim($_POST['asunto']      ?? 'Consulta web');
