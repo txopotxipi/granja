@@ -71,6 +71,19 @@ const ratonFino = matchMedia('(hover:hover) and (pointer:fine)').matches;
 
 productos.forEach((prod, i) => {
   const cab = prod.querySelector('.prod-cab');
+  const cuerpo = prod.querySelector('.prod-body');
+
+  // Accesibilidad ARIA del acordeón: cada botón controla su panel y cada
+  // panel apunta a su botón. Los ids se generan aquí para que el HTML y el
+  // JS nunca se desincronicen si se añade o reordena un producto.
+  const idCab = `prod-cab-${i + 1}`;
+  const idCuerpo = `prod-body-${i + 1}`;
+  cab.id = idCab;
+  cuerpo.id = idCuerpo;
+  cab.setAttribute('aria-controls', idCuerpo);
+  cuerpo.setAttribute('role', 'region');
+  cuerpo.setAttribute('aria-labelledby', idCab);
+
   cab.addEventListener('click', () => {
     const yaAbierto = prod.classList.contains('abierto');
     productos.forEach(p => { p.classList.remove('abierto'); p.querySelector('.prod-cab').setAttribute('aria-expanded','false'); });

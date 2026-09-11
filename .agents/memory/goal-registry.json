@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "goals": [
+    {
+      "id": "endurecimiento-despliegue",
+      "titulo": "Excelencia de despliegue: .htaccess, sitemap, og-granja.jpg, ARIA en acordeón y endurecimiento de enviar.php + exportar_para_ia.py",
+      "scope": [
+        ".htaccess",
+        "tmp-log/.htaccess",
+        "sitemap.xml",
+        "robots.txt",
+        "enviar.php",
+        "index.html",
+        "assets/js/main.js",
+        "README.md",
+        ".gitignore",
+        "exportar_para_ia.py",
+        ".agents/memory/project.md",
+        ".agents/memory/goal-registry.json"
+      ],
+      "criterios_aceptacion": [
+        ".htaccess con HTTPS+sin www, bloqueo de .git/.agents/*.md/py, caché assets/HTML, deflate, cabeceras de seguridad y 404 a index.html",
+        "tmp-log/.htaccess deniega acceso HTTP en Apache 2.2 y 2.4",
+        "sitemap.xml válido con la home y lastmod ISO 8601",
+        "enviar.php envía email con Content-Type UTF-8 y TODO de migración a SMTP/PHPMailer",
+        "index.html: og:image y twitter:image apuntan a assets/img/og-granja.jpg",
+        "main.js genera ids + aria-controls + role=region + aria-labelledby en el acordeón",
+        "README con sección Seguridad, sitemap en estructura y og-granja.jpg en pendientes",
+        "exportar_para_ia.py nunca recorre .git ni .agents/skills|references|memory y resume los omitidos",
+        "php -l OK, sitemap XML bien formado, prueba del formulario en servidor local, script python sin errores"
+      ],
+      "verificacion": "php -l enviar.php; servidor local php -S + peticiones al formulario (405/422/honeypot/429); parseo XML del sitemap; python -m py_compile y ejecución de prueba de exportar_para_ia.py; grep de los cambios en index.html/main.js/robots.txt",
+      "estado": "completada",
+      "evidencia": "php -l OK; sitemap.xml valido (loc=https://granjapilono.es/, lastmod 2026-09-11); bateria del formulario en php -S 127.0.0.1:9090: GET=405, honeypot=ok:true, invalidos=422, valido=500 solo por mail() ausente en local, 6o envio=429 (rate-limit OK, tmp-log con .tmp); exportar_para_ia.py: py_compile OK y ejecucion real con entrada redirigida exporta 15 archivos sin ninguno de .git/ ni .agents/ (memoria/references/skills) y resumen final con 104 omitidos; index.html con og:image y twitter:image a assets/img/og-granja.jpg; main.js genera prod-cab-N/prod-body-N + aria-controls + role=region + aria-labelledby; robots.txt con linea Sitemap; .gitignore versiona tmp-log/.htaccess (check-ignore OK). Pendiente: probar .htaccess en Apache real (no hay Apache en local) y crear og-granja.jpg (manual, documentado en README)."
+    },
+    {
+      "id": "excelencia-sin-dependencias",
+      "titulo": "Excelencia real: fuentes autohospedadas, favicon, SEO social, canonical y fallback sin JS",
+      "scope": [
+        "index.html",
+        "legal.html",
+        "assets/css/style.css",
+        "assets/js/main.js",
+        "assets/fonts/",
+        "robots.txt",
+        "README.md"
+      ],
+      "criterios_aceptacion": [
+        "0 peticiones a dominios externos (fuentes Fraunces + Archivo servidas desde assets/fonts/)",
+        "Favicon SVG visible en la pestaña del navegador sin petición extra",
+        "og:image, og:url, og:locale, twitter:card y canonical presentes (dominio placeholder granjapilono.es documentado en README)",
+        "Sin JavaScript: los .reveal son visibles y los contadores muestran las cifras reales (38, 60)",
+        "robots.txt creado y legal.html también sin dependencias externas"
+      ],
+      "verificacion": "Playwright sobre servidor local: document.fonts.check para las 3 fuentes, 0 peticiones a fonts.googleapis.com, 0 imágenes rotas, 0 errores de consola, capturas escritorio y móvil",
+      "estado": "completada",
+      "evidencia": "14/14 imágenes cargadas tras scroll completo; document.fonts.check OK (Fraunces normal, Fraunces italic, Archivo); externas=[] en index y legal.html; contadores 38/60 animados; robots.txt 200; 0 errores de consola. Capturas v5-*.png"
+    }
+  ]
+}

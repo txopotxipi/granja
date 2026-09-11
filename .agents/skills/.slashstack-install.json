@@ -1,0 +1,31 @@
+{
+  "product": "slashstack",
+  "version": "0.4.0",
+  "target": "agents",
+  "tier": "free",
+  "licenseFingerprint": null,
+  "managedAgentKernel": "AGENTS.md",
+  "managedSkills": [
+    "vibe",
+    "preflight",
+    "audit",
+    "remember",
+    "recall",
+    "improve",
+    "ship",
+    "execute",
+    "explain",
+    "next",
+    "security"
+  ],
+  "managedGuards": [],
+  "managedGitHooks": [],
+  "createdAgentKernel": true,
+  "createdMemory": true,
+  "createdPatterns": true,
+  "createdGoalRegistry": true,
+  "createdCheckpoints": true,
+  "createdReferencesReadme": true,
+  "createdGoalTemplate": true,
+  "installedAt": "2026-09-06T15:39:00.127Z"
+}

@@ -79,9 +79,18 @@ $cuerpo       = "Nombre: {$nombre}\n"
               . "Email: {$email}\n"
               . "Asunto: {$asunto}\n\n"
               . $mensaje . "\n";
-$cabeceras    = "From: Web Granja Piloño <no-reply@granjapilono.es>\r\n"
+// MIME-Version + Content-Type: el cuerpo viaja como UTF-8 explícito y los
+// acentos y eñes no se corrompen en el correo.
+$cabeceras    = "MIME-Version: 1.0\r\n"
+              . "Content-Type: text/plain; charset=UTF-8\r\n"
+              . "From: Web Granja Piloño <no-reply@granjapilono.es>\r\n"
               . "Reply-To: {$email_limpio}\r\n";
 
+// TODO (spam): mail() envía sin autenticación y algunos proveedores marcan
+// esos correos como spam de forma sistemática. Si pasa, migrar a SMTP
+// autenticado con PHPMailer (host del correo, puerto 587, usuario y
+// contraseña). Solo cambia esta llamada: toda la validación y el antispam
+// de arriba siguen sirviendo exactamente igual.
 $enviado = @mail($destinatario, '=?UTF-8?B?' . base64_encode($asunto_mail) . '?=', $cuerpo, $cabeceras);
 
 if ($enviado) {

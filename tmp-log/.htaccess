@@ -1,0 +1,15 @@
+# ============================================================
+#  tmp-log/ — registros antispam del formulario (enviar.php)
+#  Nadie debe poder leerlos por HTTP: solo el PHP del propio sitio.
+# ============================================================
+
+# Apache 2.4 (mod_authz_core)
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+
+# Apache 2.2 (módulo de autorización antiguo)
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

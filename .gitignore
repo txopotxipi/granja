@@ -15,5 +15,8 @@ desktop.ini
 __pycache__/
 *.py[cod]
 
-# Anti-spam del formulario (registro de envíos por IP)
-tmp-log/
+# Anti-spam del formulario (registro de envíos por IP).
+# Se ignora el contenido, pero NO el .htaccess que lo protege:
+# así la protección viaja con el repositorio.
+tmp-log/*
+!tmp-log/.htaccess

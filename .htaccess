@@ -1,0 +1,78 @@
+# ============================================================
+#  Granja Piloño — configuración del servidor (Apache)
+#  Si el hosting no usa Apache (p. ej. NGINX), estas reglas no
+#  se aplican: pedir al proveedor las equivalentes (ver README).
+# ============================================================
+
+# ---------- Dominio canónico: sin www y con HTTPS ----------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Bloqueos internos: .git y .agents son metadatos de trabajo.
+  # Responden 404 (como si no existieran) en vez de 403, para no
+  # revelar que están ahí.
+  RewriteRule (^|/)\.git(/|$) - [R=404,L]
+  RewriteRule (^|/)\.agents(/|$) - [R=404,L]
+
+  # www.granjapilono.es  ->  granjapilono.es (un solo salto, ya en HTTPS)
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # HTTP -> HTTPS. La segunda condición evita bucles en hostings que
+  # terminan el HTTPS en un proxy (X-Forwarded-Proto ya es https ahí).
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+</IfModule>
+
+# ---------- Documentación y scripts auxiliares: no públicos ----------
+# *.md (README, AGENTS, SKILL…) y *.py (scripts auxiliares)
+<FilesMatch "\.(md|py)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# El propio .htaccess tampoco se sirve (Apache lo protege por defecto;
+# esto lo refuerza en hostings con configuración laxa)
+<FilesMatch "^\.ht">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# ---------- Caché y cabeceras de seguridad ----------
+<IfModule mod_headers.c>
+  # Assets (CSS, JS, fuentes e imágenes): un año, inmutable.
+  # Todos los recursos del sitio viven en assets/ con nombre estable.
+  <FilesMatch "\.(css|js|woff2|webp|jpe?g|png|gif|svg|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # HTML: siempre revalidado, para que los cambios se vean al publicar
+  <FilesMatch "\.html?$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # Cabeceras de seguridad básicas
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+</IfModule>
+
+# ---------- Compresión (solo texto; WebP y WOFF2 ya van comprimidos) ----------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml text/xml application/xml
+</IfModule>
+
+# ---------- Página de error 404 ----------
+ErrorDocument 404 /index.html
