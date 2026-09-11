@@ -11,7 +11,7 @@ granja-cerdos/
 ├── 404.html            → Página de error 404 real (autocontenida, con noindex)
 ├── _headers            → Cabeceras de seguridad y caché para Cloudflare Pages
 ├── build.sh            → Build de Cloudflare Pages: copia lo público a dist/
-├── enviar.php          → Formulario para hosting Apache con PHP (Pages no lo publica)
+├── enviar.php          → Backend PHP opcional (ver «Formulario: cómo llegan los mensajes»)
 ├── .htaccess           → HTTPS, sin www, caché, compresión y bloqueos (Apache)
 ├── sitemap.xml         → Mapa del sitio para buscadores (solo la página principal)
 ├── robots.txt          → Autoriza a los buscadores y declara el sitemap
@@ -57,7 +57,7 @@ Pages no lee `.htaccess` ni ejecuta PHP; su equivalente son tres archivos de tex
 
 El `.htaccess` (Apache, el servidor más común en hosting compartido) se ocupa de todo esto sin tocar el código de la web:
 
-- **HTTPS obligatorio y sin `www`:** cualquier visita llega siempre a `https://granjapilono.es`, en un solo salto.
+- **HTTPS obligatorio y sin `www`:** cualquier visita llega siempre al dominio configurado (hoy `https://granja.pages.dev`), en un solo salto.
 - **Carpetas y archivos internos bloqueados:** `.git/`, `.agents/` y los `*.md` responden 404 (como si no existieran). Son documentación y metadatos de trabajo, no parte del sitio público.
 - **Caché bien repartida:** las imágenes, el CSS, el JS y las fuentes se guardan un año en el navegador (las visitas repetidas cargan al instante); el HTML se revalida siempre, así los cambios se ven en cuanto se publican.
 - **Cabeceras de seguridad:** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` y `Permissions-Policy`, las básicas recomendadas.
@@ -75,14 +75,15 @@ El `.htaccess` (Apache, el servidor más común en hosting compartido) se ocupa 
 
 1. Cada `git push` a `main` despliega automáticamente.
 2. En el panel de Pages, fijar Build command `sh build.sh` y Output directory `dist`: con eso solo lo público llega a la web (ver [Seguridad](#seguridad)).
-3. El formulario envía con `mailto:` — abre el correo del visitante con el mensaje ya escrito; cero dependencias. Cuando exista dominio propio se puede migrar a Cloudflare Email Routing (gratis, sin terceros) o a una Pages Function.
+3. El formulario envía con `mailto:` — ver la sección «Formulario: cómo llegan los mensajes» para activar un endpoint real.
 
 **Alternativa — hosting compartido con PHP** (Hostinger, IONOS, Piensa Solutions, OVH…):
 
 1. Sube por FTP `index.html`, `legal.html`, `assets/`, `robots.txt`, `sitemap.xml`, `.htaccess`, `tmp-log/` y `enviar.php` al directorio público (`public_html` o similar).
 2. Comprueba que tu plan tenga **PHP 8+** (es el único requisito del `enviar.php`).
 3. Edita `enviar.php` y cambia `$destinatario` por el email real de Ignacio.
-4. Listo: el formulario llegará al correo de verdad, con honeypot y rate-limit incluidos.
+4. En `assets/js/main.js` pon `const ENDPOINT_FORMULARIO = 'enviar.php';` — sin ese paso el formulario seguiría usando `mailto:` y `enviar.php` no recibiría nada.
+5. Listo: el formulario llegará al correo de verdad, con honeypot y rate-limit incluidos.
 
 ## Antes de publicar — pendientes reales
 
@@ -90,8 +91,9 @@ El `.htaccess` (Apache, el servidor más común en hosting compartido) se ocupa 
 |---|---|
 | Teléfono real (ahora `+34 600 000 000`) | `index.html` (2 sitios), JSON-LD |
 | Email real (ahora `hola@granjapilono.es`) | `index.html`, `main.js`, `404.html`, `enviar.php` |
-| Dominio real (ahora placeholder `https://granjapilono.es/`) | `index.html`: `canonical`, `og:url`; `sitemap.xml`; `robots.txt` (línea `Sitemap:`); conectarlo en el panel de Cloudflare Pages |
-| `og-granja.jpg` — imagen social 1200×630 para la vista previa en WhatsApp y redes (por crear) | `assets/img/og-granja.jpg` — el `<head>` de `index.html` ya apunta ahí |
+| Dominio real (ahora `https://granja.pages.dev/`) | Al comprarlo: `index.html` (`canonical`, `og:url`, `og:image`, `twitter:image`), `sitemap.xml`, `robots.txt` (`Sitemap:`) y conectarlo en el panel de Cloudflare Pages |
+| Cambiar el formulario a endpoint real (ahora `mailto:`) | `assets/js/main.js` → constante `ENDPOINT_FORMULARIO` (ver «Formulario: cómo llegan los mensajes») |
+| Testimonio real o eliminarlo (el actual es de relleno) | `index.html`, sección `<section class="cita">` |
 | Fotos reales de la granja | Sobreescribe los `.webp` de `assets/img/` manteniendo los mismos nombres |
 | Coordenadas GPS para el SEO local | Bloque JSON-LD en `index.html` (añadir `"geo"`) |
 

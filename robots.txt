@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://granjapilono.es/sitemap.xml
+Sitemap: https://granja.pages.dev/sitemap.xml
 

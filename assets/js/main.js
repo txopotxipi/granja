@@ -179,11 +179,32 @@ formulario.addEventListener('submit', e => {
     mostrarToast('¡Mensaje enviado! Te respondemos en 24–48 h.');
     return;
   }
-  // Producción en Cloudflare Pages: hosting estático, sin PHP ni servidor
-  // de correo. Envío con mailto: — cero dependencias — abre el correo del
-  // visitante con el mensaje ya escrito. Cuando exista dominio propio se
-  // puede migrar a Cloudflare Email Routing (gratis y sin terceros).
+  // ------------------------------------------------------------------
+  //  ENVÍO DEL FORMULARIO
+  //  ENDPOINT_FORMULARIO: cuando exista un servicio que reciba el
+  //  mensaje (una Pages Function con Email Routing, Formspree, Brevo…),
+  //  basta con pegar aquí su URL. El formulario enviará por POST y el
+  //  visitante no saldrá de la web.
+  //  Mientras esté vacío se usa mailto: — abre el correo del visitante
+  //  con el mensaje ya escrito: cero dependencias, pero en un móvil sin
+  //  app de correo configurada el mensaje no sale (limitación conocida).
+  // ------------------------------------------------------------------
+  const ENDPOINT_FORMULARIO = '';
   const destino = 'hola@granjapilono.es';
+  if (ENDPOINT_FORMULARIO) {
+    const boton = formulario.querySelector('button[type="submit"]');
+    boton.disabled = true;
+    fetch(ENDPOINT_FORMULARIO, { method: 'POST', body: new FormData(formulario) })
+      .then(r => { if(!r.ok) throw 0; return r.json().catch(() => ({ok:true})); })
+      .then(res => {
+        if(res && res.ok === false) throw 0;
+        formulario.reset();
+        mostrarToast('¡Mensaje enviado! Te respondemos en 24–48 h.');
+      })
+      .catch(() => mostrarToast('No se pudo enviar. Escríbenos a ' + destino))
+      .finally(() => { boton.disabled = false; });
+    return;
+  }
   const titulo = encodeURIComponent('[Web Granja Piloño] ' + asunto.value + ' — ' + nombre.value.trim());
   const cuerpoMail = encodeURIComponent(
     mensaje.value.trim() + '\n\n— ' + nombre.value.trim() + ' · ' + email.value.trim()
