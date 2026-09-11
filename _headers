@@ -1,0 +1,22 @@
+# ============================================================
+#  Granja Piloño — cabeceras para Cloudflare Pages (_headers)
+#  Equivalente web del .htaccess (Pages no lee .htaccess).
+#  Si dos reglas tocan la misma cabecera, la última manda:
+#  por eso las fuentes van AL FINAL, para imponer su caché.
+# ============================================================
+
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+# CSS, JS e imágenes: una semana. Los nombres de archivo no llevan
+# versión, así que una caché más larga haría que los visitantes
+# viesen la web antigua después de cada publicación.
+/assets/*
+  Cache-Control: public, max-age=604800
+
+# Fuentes: un año, inmutable. Nunca cambian de contenido.
+/assets/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

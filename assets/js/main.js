@@ -172,30 +172,28 @@ formulario.addEventListener('submit', e => {
   if(mensaje.value.trim().length < 10){ marcarCampo(mensaje, 'Cuéntanos un poco más (mín. 10 caracteres).'); ok = false; }
   if(privacidad && !privacidad.checked){ marcarCampo(privacidad, 'Debes aceptar la política de privacidad.'); ok = false; }
   if(!ok) return;
-  // Envío real a enviar.php (necesita hosting con PHP). Si la web se abre
-  // sin servidor, avisamos con un contacto alternativo.
-  const boton = formulario.querySelector('button[type="submit"]');
-  boton.disabled = true;
-  fetch('enviar.php', { method: 'POST', body: new FormData(formulario) })
-    .then(r => { if(!r.ok) throw 0; return r.json(); })
-    .then(res => {
-      formulario.reset();
-      mostrarToast(res.ok
-        ? '¡Mensaje enviado! Te respondemos en 24–48 h.'
-        : (res.error || 'No se pudo enviar. Escríbenos a hola@granjapilono.es'));
-    })
-    .catch(() => {
-      formulario.reset();
-      mostrarToast('Sin servidor de correo. Escríbenos a hola@granjapilono.es');
-    })
-    .finally(() => { boton.disabled = false; });
+  // Honeypot (ahora en el navegador): si el campo trampa llega relleno es
+  // un bot; fingimos éxito y no hacemos nada. Nadie nota la diferencia.
+  if(document.getElementById('web').value.trim() !== ''){
+    formulario.reset();
+    mostrarToast('¡Mensaje enviado! Te respondemos en 24–48 h.');
+    return;
+  }
+  // Producción en Cloudflare Pages: hosting estático, sin PHP ni servidor
+  // de correo. Envío con mailto: — cero dependencias — abre el correo del
+  // visitante con el mensaje ya escrito. Cuando exista dominio propio se
+  // puede migrar a Cloudflare Email Routing (gratis y sin terceros).
+  const destino = 'hola@granjapilono.es';
+  const titulo = encodeURIComponent('[Web Granja Piloño] ' + asunto.value + ' — ' + nombre.value.trim());
+  const cuerpoMail = encodeURIComponent(
+    mensaje.value.trim() + '\n\n— ' + nombre.value.trim() + ' · ' + email.value.trim()
+  );
+  mostrarToast('Abriendo tu correo… si no se abre, escríbenos a ' + destino);
+  window.location.href = 'mailto:' + destino + '?subject=' + titulo + '&body=' + cuerpoMail;
 });
 
 /* --- Año dinámico --- */
 document.getElementById('anio').textContent = new Date().getFullYear();
-
-/* --- Anti-bot: marca de llegada al formulario (se lee en enviar.php) --- */
-document.getElementById('form_inicio').value = String(Date.now());
 
 /* --- Móvil: miniatura del producto dentro del acordeón abierto.
    En escritorio la imagen flotante sigue al cursor; en pantallas táctiles

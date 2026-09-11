@@ -8,12 +8,15 @@ Web de la granja de cerdos de **Ignacio**, en Santa María de Piloño (Villa de 
 granja-cerdos/
 ├── index.html          → Estructura y contenido de la página principal
 ├── legal.html          → Aviso legal, Política de Privacidad (RGPD) y Cookies
-├── enviar.php          → Recepción y validación del formulario de contacto
+├── 404.html            → Página de error 404 real (autocontenida, con noindex)
+├── _headers            → Cabeceras de seguridad y caché para Cloudflare Pages
+├── build.sh            → Build de Cloudflare Pages: copia lo público a dist/
+├── enviar.php          → Formulario para hosting Apache con PHP (Pages no lo publica)
 ├── .htaccess           → HTTPS, sin www, caché, compresión y bloqueos (Apache)
 ├── sitemap.xml         → Mapa del sitio para buscadores (solo la página principal)
 ├── robots.txt          → Autoriza a los buscadores y declara el sitemap
 ├── README.md           → Este archivo
-├── tmp-log/            → Registros antispam del formulario (no accesible por web)
+├── tmp-log/            → Registros antispam del formulario PHP (no accesible por web)
 │   └── .htaccess       → Prohibición total de acceso por HTTP
 └── assets/
     ├── css/style.css   → Todos los estilos + @font-face de las fuentes locales
@@ -26,7 +29,7 @@ granja-cerdos/
 
 ## Verla en local
 
-- **Sin instalar nada:** doble clic en `index.html`. Todo funciona salvo el envío real del formulario (avisa con el email alternativo).
+- **Sin instalar nada:** doble clic en `index.html`. Todo funciona, incluido el formulario (abre tu correo con el mensaje ya escrito).
 - **Con servidor local (para probar el PHP):**
   ```powershell
   # Requiere PHP instalado (https://windows.php.net/download/)
@@ -38,7 +41,21 @@ granja-cerdos/
 
 ## Seguridad
 
-El archivo `.htaccess` (Apache, el servidor más común en hosting compartido) se ocupa de todo esto sin tocar el código de la web:
+Dos capas, según dónde viva la web:
+
+### Producción: Cloudflare Pages (`granja.pages.dev`)
+
+Pages no lee `.htaccess` ni ejecuta PHP; su equivalente son tres archivos de texto:
+
+- **`_headers`** — cabeceras de seguridad en todas las páginas (`X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`) y caché por tipo: fuentes 1 año inmutables; CSS, JS e imágenes 1 semana (los nombres de archivo no llevan versión, y una caché más larga enseñaría la web vieja tras cada publicación).
+- **`404.html`** — Cloudflare la sirve con estado 404 real. Sin ella, cualquier ruta inexistente responde 200 con la portada («soft-404»): mal para el SEO y enmascara las imágenes rotas.
+- **`build.sh` + `dist/`** — el build copia a producción solo lo público (`index.html`, `legal.html`, `assets/`, `robots.txt`, `sitemap.xml`, `_headers`, `404.html`). Los archivos internos (`.agents/`, `*.md`, `.htaccess`, `enviar.php`, `tmp-log/`) nunca salen del repositorio.
+
+**Configuración en el panel** (Cloudflare Pages → Settings → Build & deployments): Build command `sh build.sh`, Output directory `dist`. HTTPS, redirección y compresión las pone Cloudflare de serie.
+
+### Reserva: hosting Apache
+
+El `.htaccess` (Apache, el servidor más común en hosting compartido) se ocupa de todo esto sin tocar el código de la web:
 
 - **HTTPS obligatorio y sin `www`:** cualquier visita llega siempre a `https://granjapilono.es`, en un solo salto.
 - **Carpetas y archivos internos bloqueados:** `.git/`, `.agents/` y los `*.md` responden 404 (como si no existieran). Son documentación y metadatos de trabajo, no parte del sitio público.
@@ -46,28 +63,34 @@ El archivo `.htaccess` (Apache, el servidor más común en hosting compartido) s
 - **Cabeceras de seguridad:** `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` y `Permissions-Policy`, las básicas recomendadas.
 - **Compresión:** el texto (HTML, CSS, JS, SVG) viaja comprimido en gzip; WebP y WOFF2 ya van comprimidos de fábrica.
 
-`tmp-log/` guarda los contadores antispam del formulario. Su `.htaccess` prohíbe leerlos por HTTP (funciona en Apache 2.2 y 2.4): solo el PHP del propio sitio puede usarlos. En git se ignora todo el contenido de `tmp-log/` **salvo ese `.htaccess` de protección**, para que la defensa viaje con el repositorio.
+`tmp-log/` guarda los contadores antispam del formulario PHP. Su `.htaccess` prohíbe leerlos por HTTP (funciona en Apache 2.2 y 2.4): solo el PHP del propio sitio puede usarlos. En git se ignora todo el contenido de `tmp-log/` **salvo ese `.htaccess` de protección**, para que la defensa viaje con el repositorio.
 
-**Dos avisos al publicar:**
+**Dos avisos al publicar en Apache:**
 - Activa "mostrar archivos ocultos" en tu cliente FTP: los archivos que empiezan por punto (`.htaccess`) son invisibles y, sin ellos, estas protecciones no suben al servidor.
 - Estas reglas valen para **Apache**. Si el hosting usa NGINX u otro servidor, `.htaccess` no se aplica: pide al proveedor las reglas equivalentes.
 
 ## Publicar en internet
 
-Cualquier hosting básico sirve (Hostinger, IONOS, Piensa Solutions, OVH…):
+**Producción actual — Cloudflare Pages** (conectado al repo de GitHub, `git push` y listo):
 
-1. Sube **toda la carpeta** por FTP al directorio público (`public_html` o similar).
-2. Comprueba que tu plan tenga **PHP 8+** (todos los básicos lo tienen; es el único requisito del `enviar.php`).
+1. Cada `git push` a `main` despliega automáticamente.
+2. En el panel de Pages, fijar Build command `sh build.sh` y Output directory `dist`: con eso solo lo público llega a la web (ver [Seguridad](#seguridad)).
+3. El formulario envía con `mailto:` — abre el correo del visitante con el mensaje ya escrito; cero dependencias. Cuando exista dominio propio se puede migrar a Cloudflare Email Routing (gratis, sin terceros) o a una Pages Function.
+
+**Alternativa — hosting compartido con PHP** (Hostinger, IONOS, Piensa Solutions, OVH…):
+
+1. Sube por FTP `index.html`, `legal.html`, `assets/`, `robots.txt`, `sitemap.xml`, `.htaccess`, `tmp-log/` y `enviar.php` al directorio público (`public_html` o similar).
+2. Comprueba que tu plan tenga **PHP 8+** (es el único requisito del `enviar.php`).
 3. Edita `enviar.php` y cambia `$destinatario` por el email real de Ignacio.
-4. Listo: el formulario llegará al correo, con protección antispam (honeypot) incluida.
+4. Listo: el formulario llegará al correo de verdad, con honeypot y rate-limit incluidos.
 
 ## Antes de publicar — pendientes reales
 
 | Qué | Dónde |
 |---|---|
 | Teléfono real (ahora `+34 600 000 000`) | `index.html` (2 sitios), JSON-LD |
-| Email real (ahora `hola@granjapilono.es`) | `index.html`, `enviar.php` |
-| Dominio real (ahora placeholder `https://granjapilono.es/`) | `index.html`: `canonical`, `og:url`; `sitemap.xml`; `robots.txt` (línea `Sitemap:`) |
+| Email real (ahora `hola@granjapilono.es`) | `index.html`, `main.js`, `404.html`, `enviar.php` |
+| Dominio real (ahora placeholder `https://granjapilono.es/`) | `index.html`: `canonical`, `og:url`; `sitemap.xml`; `robots.txt` (línea `Sitemap:`); conectarlo en el panel de Cloudflare Pages |
 | `og-granja.jpg` — imagen social 1200×630 para la vista previa en WhatsApp y redes (por crear) | `assets/img/og-granja.jpg` — el `<head>` de `index.html` ya apunta ahí |
 | Fotos reales de la granja | Sobreescribe los `.webp` de `assets/img/` manteniendo los mismos nombres |
 | Coordenadas GPS para el SEO local | Bloque JSON-LD en `index.html` (añadir `"geo"`) |

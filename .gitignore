@@ -20,3 +20,6 @@ __pycache__/
 # así la protección viaja con el repositorio.
 tmp-log/*
 !tmp-log/.htaccess
+
+# Salida del build para Cloudflare Pages (la genera build.sh)
+dist/

@@ -2,6 +2,32 @@
   "version": 1,
   "goals": [
     {
+      "id": "migracion-cloudflare-pages",
+      "titulo": "Adaptar la produccion a Cloudflare Pages: formulario mailto sin dependencias, _headers, 404 real y dist/ sin archivos internos",
+      "scope": [
+        "assets/js/main.js",
+        "index.html",
+        "_headers",
+        "404.html",
+        "build.sh",
+        ".gitignore",
+        "README.md",
+        ".agents/memory/project.md",
+        ".agents/memory/goal-registry.json"
+      ],
+      "criterios_aceptacion": [
+        "main.js: el formulario valida igual y envia via mailto con asunto y cuerpo rellenos; honeypot finge exito sin hacer nada",
+        "main.js sin referencias a enviar.php ni form_inicio; index.html sin el input form_inicio",
+        "_headers: seguridad en /* y cache (assets 7 dias, fuentes 1 ano immutable al final)",
+        "404.html autocontenida con noindex y enlace a inicio",
+        "build.sh copia solo lo publico a dist/ (sin .agents, *.md, .htaccess, enviar.php, tmp-log)",
+        "node --check main.js OK y build.sh genera dist/ verificada en local"
+      ],
+      "verificacion": "node --check assets/js/main.js; sh build.sh y listado de dist/ excluyendo internos; grep de mailto en main.js y ausencia de form_inicio; commit + push a origin main",
+      "estado": "completada",
+      "evidencia": "node --check main.js OK; build real con sh (Git para Windows) genera dist/ con 25 archivos solo publicos (index, legal, 404, _headers, robots, sitemap, css, js, 3 fuentes, 14 webp) y CERO internos (.agents, *.md, .htaccess, enviar.php, tmp-log, build.sh); grep: mailto presente y cero referencias a form_inicio/enviar.php en main.js e index.html; _headers con seguridad en /*, assets 7 dias y fuentes 1 ano immutable como ultima regla; 404.html autocontenida con noindex; build.sh y _headers en LF (0 CRLF). Pendiente del usuario: fijar en el panel de Pages build command 'sh build.sh' y output 'dist'."
+    },
+    {
       "id": "endurecimiento-despliegue",
       "titulo": "Excelencia de despliegue: .htaccess, sitemap, og-granja.jpg, ARIA en acordeón y endurecimiento de enviar.php + exportar_para_ia.py",
       "scope": [

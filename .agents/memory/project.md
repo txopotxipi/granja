@@ -8,8 +8,8 @@ when confirmed project facts change.
 ## Stack
 
 - Sitio web estático: HTML + CSS + JS vanilla, sin build ni dependencias externas (0 peticiones a terceros).
-- Formulario de contacto con backend PHP (`enviar.php`); requiere hosting con PHP 8+ y `mail()`.
-- Servidor objetivo: Apache con `.htaccess` (HTTPS, caché, bloqueos, cabeceras de seguridad).
+- Formulario: validación en el navegador + envío `mailto:` con asunto y cuerpo (0 dependencias, pensado para Cloudflare Pages). `enviar.php` (honeypot + rate-limit + UTF-8) queda como variante lista para un hosting Apache con PHP 8+; no se publica en Pages.
+- **Hosting real: Cloudflare Pages** (`https://granja.pages.dev`), conectado al repo GitHub (`txopotxipi/granja`). Es hosting estático: no ejecuta PHP ni lee `.htaccess`; sirve `enviar.php` como texto plano y cualquier ruta inexistente como 200 + index.html (soft-404, hasta añadir `404.html`). HTTPS, brotli, `nosniff` y `referrer-policy` los pone Cloudflare de serie; caché fina y resto de cabeceras requieren `_headers`, y los bloqueos de archivos internos se resuelven no publicándolos (build command a `dist/`). El `.htaccess` queda como preparación por si se migra a hosting Apache.
 - Fuentes: Fraunces y Archivo **autohospedadas** en `assets/fonts/` (WOFF2 variable, subset latin, ~180 KB; `@font-face` al inicio de `style.css`).
 - Agent layer: SlashStack (instalado también en la raíz del workspace `D:\granja`).
 - Git: repositorio propio con rama `main` y remoto `origin`.
@@ -18,7 +18,10 @@ when confirmed project facts change.
 
 - `index.html` — single page (hero, filosofía, cifras, productos acordeón, proceso sticky, galería, cita, contacto).
 - `legal.html` — aviso legal, privacidad (RGPD) y cookies.
-- `enviar.php` — validación server-side + honeypot + rate-limit + anti-inyección de cabeceras; cuerpo del email con UTF-8 explícito (`Content-Type: text/plain; charset=UTF-8`).
+- `enviar.php` — variante PHP del formulario para hosting Apache (validación server-side + honeypot + rate-limit + UTF-8). NO se publica en Pages (build.sh lo excluye).
+- `_headers` — seguridad (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) y caché para Cloudflare Pages (assets 7 días, fuentes 1 año immutable).
+- `404.html` — 404 real autocontenida con `noindex`; elimina el soft-404 de Pages (rutas inexistentes devolvían 200 + index.html).
+- `build.sh` — build de Pages: copia solo lo público a `dist/` (en el panel: build command `sh build.sh`, output directory `dist`).
 - `.htaccess` — HTTPS sin www, caché (assets 1 año inmutable / HTML no-cache), compresión, cabeceras de seguridad y bloqueo 404 de `.git/`, `.agents/`, `*.md` y `*.py`.
 - `tmp-log/.htaccess` — acceso HTTP denegado (Apache 2.2 y 2.4); el resto de `tmp-log/` está en `.gitignore`.
 - `sitemap.xml` — solo la home, con dominio placeholder.
@@ -29,7 +32,7 @@ when confirmed project facts change.
 
 ## Commands
 
-- Test / Build: no existen (proyecto sin tooling).
+- Build Cloudflare Pages: `sh build.sh` → genera `dist/` con solo lo público (en el panel de Pages: build command `sh build.sh`, output `dist`).
 - Lint PHP: `php -l enviar.php`.
 - Servidor local con PHP (probar formulario): `php -S 127.0.0.1:9090` desde `granja-cerdos/` (el 8080 puede dar error de permisos de socket en algunos entornos).
 - Sin servidor: abrir `index.html` directamente (el formulario muestra aviso alternativo por email).
@@ -49,7 +52,9 @@ when confirmed project facts change.
 - El testimonio del `index.html` es de relleno hasta tener uno real.
 - Favicon, `og:image`, `og:url`, `canonical` y `twitter:card` ya existen; el dominio es el placeholder `https://granjapilono.es/` hasta conocer el real (editar el `<head>` de `index.html`, `sitemap.xml` y la línea `Sitemap:` de `robots.txt`).
 - `og:image` y `twitter:image` apuntan a `assets/img/og-granja.jpg` (JPG 1200×630 para previsualizaciones sociales): hay que crearlo manualmente antes de publicar o la vista previa en WhatsApp/redes saldrá sin imagen.
-- `.htaccess` y `tmp-log/.htaccess` solo aplican en hosting Apache; en NGINX hay que traducir las reglas. Al subir por FTP, activar "mostrar archivos ocultos" para que los `.htaccess` se copien al servidor.
+- `.htaccess` y `tmp-log/.htaccess` solo aplican en hosting Apache; en Cloudflare Pages (producción actual) no se leen — y el propio `.htaccess` se sirve como archivo público. Al subir por FTP a un Apache, activar "mostrar archivos ocultos" para que los `.htaccess` se copien al servidor.
+- El formulario en Pages envía vía `mailto:` (decisión del usuario, 0 dependencias): funciona sin servidor, pero abre el correo del visitante. Migrar a Cloudflare Email Routing cuando exista dominio propio (gratis, sin terceros) o a una Pages Function con Resend.
+- Pendiente en el panel de Cloudflare Pages: fijar build command `sh build.sh` y output `dist` — sin ese paso el deploy sigue publicando el repo entero (`.agents/`, `*.md`, `enviar.php` visibles y soft-404).
 - Fallback no-JS resuelto: `class="no-js"` en `<html>` + `.no-js .reveal` visible + contadores con cifra real que `main.js` reinicia a 0 al cargar.
 - El envío depende de `mail()`; si cae en spam, migrar a SMTP (PHPMailer) — hay un TODO en `enviar.php`.
 - Enlaces de redes sociales del footer apuntan a `#` hasta tener perfiles reales.
