@@ -1,0 +1,32 @@
+# ============================================================
+#  .assetsignore — archivos que NUNCA deben servirse por web
+#  Cloudflare Pages los excluye del despliegue aunque el
+#  directorio de salida sea la raíz del repositorio.
+#  Es la red de seguridad: lo correcto es además poner
+#  Output directory = dist en el panel de Cloudflare Pages.
+# ============================================================
+
+# Metadatos y control de versiones
+.git
+.gitignore
+
+# Capa de trabajo del agente (memoria, objetivos, skills)
+.agents
+AGENTS.md
+
+# Documentación interna
+*.md
+README.md
+
+# Backend PHP y sus registros (no se ejecutan en Pages)
+enviar.php
+tmp-log
+
+# Scripts de build y configuración de servidor
+build.sh
+.htaccess
+
+# Cachés de herramientas
+__pycache__
+*.py
+.claude

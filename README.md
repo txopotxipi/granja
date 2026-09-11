@@ -49,6 +49,7 @@ Pages no lee `.htaccess` ni ejecuta PHP; su equivalente son tres archivos de tex
 
 - **`_headers`** — cabeceras de seguridad en todas las páginas (`X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`) y caché por tipo: fuentes 1 año inmutables; CSS, JS e imágenes 1 semana (los nombres de archivo no llevan versión, y una caché más larga enseñaría la web vieja tras cada publicación).
 - **`404.html`** — Cloudflare la sirve con estado 404 real. Sin ella, cualquier ruta inexistente responde 200 con la portada («soft-404»): mal para el SEO y enmascara las imágenes rotas.
+- **`.assetsignore`** — red de seguridad: Cloudflare Pages excluye del despliegue los archivos internos (`.agents/`, `*.md`, `AGENTS.md`, `enviar.php`, `tmp-log/`, `build.sh`, `.git/`) aunque el directorio de salida fuese la raíz del repositorio. Comprobado en producción: sin este archivo, `AGENTS.md` y `.agents/` eran accesibles por URL.
 - **`build.sh` + `dist/`** — el build copia a producción solo lo público (`index.html`, `legal.html`, `assets/`, `robots.txt`, `sitemap.xml`, `_headers`, `404.html`). Los archivos internos (`.agents/`, `*.md`, `.htaccess`, `enviar.php`, `tmp-log/`) nunca salen del repositorio.
 
 **Configuración en el panel** (Cloudflare Pages → Settings → Build & deployments): Build command `sh build.sh`, Output directory `dist`. HTTPS, redirección y compresión las pone Cloudflare de serie.
