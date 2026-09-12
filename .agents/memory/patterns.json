@@ -50,6 +50,20 @@
         "Los nombres de archivo no llevan hash: la versión del service worker es lo único que fuerza la renovación.",
         "Comprobar que _headers y .htaccess siguen sirviendo sw.js con Cache-Control: no-cache."
       ]
+    },
+    {
+      "id": "auditar-antes-de-publicar",
+      "titulo": "Auditar antes de empujar a produccion",
+      "cuando": "Justo antes de `git push` a una rama que despliega sola (Cloudflare Pages desde GitHub).",
+      "por_que": "Un push a main es un despliegue. Los dos fallos mas caros no dan error en local: el sitio se ve bien en tu maquina y se rompe solo en produccion.",
+      "comprobaciones": [
+        "RECURSOS IGNORADOS POR GIT: cualquier archivo que el HTML/manifest referencie tiene que estar versionado. Pasa `git check-ignore -v` por cada uno. Caso real: `.gitignore` tenia `*.png` para las capturas de diseno, y eso excluia los 4 iconos de la PWA. En produccion el manifest habria dado 404 en los iconos y la PWA no seria instalable. Localmente no se nota.",
+        "FINALES DE LINEA: si el proyecto se despliega en Linux, `build.sh` y cualquier script deben ir con LF. Con `core.autocrlf=true` en Windows, git avisa con 'LF will be replaced by CRLF' pero puede colarse un CRLF que rompe el build con ': not found'. Solucion: un `.gitattributes` con `* text=auto eol=lf`.",
+        "Contrastar lo que se envia con lo que se sirve: `git show :archivo | grep -qU $'\\r'` para ver el fin de linea REAL del commit (no del disco).",
+        "Binarios intactos: comparar `git show :archivo | wc -c` con el tamano en disco. Una normalizacion de texto sobre un binario lo corrompe.",
+        "Pasar la bateria de pruebas completa antes de empujar, no despues.",
+        "Despues del push, confirmar contra el servidor con `git ls-remote origin <rama>` o la API de GitHub. No basta con que `git push` diga OK."
+      ]
     }
   ]
 }
