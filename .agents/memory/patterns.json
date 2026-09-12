@@ -18,7 +18,8 @@
         "page.click() desplaza la página para dejar el elemento a la vista: el scroll cambia entre bloques de pruebas. Recargar antes de comprobar estados que dependen del scroll (botón de WhatsApp, scrollspy).",
         "Para probar rutas de móvil hay que usar setViewport({isMobile:true, hasTouch:true}), o matchMedia('(hover:none)') no coincide y el código móvil nunca se ejecuta.",
         "Para inspeccionar window.open, sobrescribirlo antes del clic y devolver un objeto truthy (si devuelve null, el código hace fallback a location.href).",
-        "En español toLocaleString('es-ES') NO agrupa números de 4 cifras: 2106,00 es correcto, 2.106,00 no. No es un bug."
+        "En español toLocaleString('es-ES') NO agrupa números de 4 cifras: 2106,00 es correcto, 2.106,00 no. No es un bug.",
+        "Para detectar scroll horizontal NO sirve comparar scrollWidth con clientWidth: clientWidth excluye la barra de desplazamiento y da falsos positivos de unos pocos píxeles. Tampoco sirve recorrer los elementos con getBoundingClientRect().right, porque incluye los que están recortados por un overflow:hidden del contenedor (el marquee mide 3197 px y está bien recortado). La prueba que vale: window.scrollTo(9999,0) y comprobar que window.scrollX sigue siendo 0. Probar en varios anchos (360, 390, 414, 768, 1440)."
       ],
       "comprobaciones_que_merecen_la_pena": [
         "Interacciones: calculadora (valores esperados calculados a mano), acordeones, visor, FAQ.",
