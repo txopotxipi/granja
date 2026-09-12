@@ -187,6 +187,94 @@ El `.htaccess` (Apache, el servidor más común en hosting compartido) se ocupa 
 4. En `assets/js/main.js` pon `const ENDPOINT_FORMULARIO = 'enviar.php';` — sin ese paso el formulario seguiría usando `mailto:` y `enviar.php` no recibiría nada.
 5. Listo: el formulario llegará al correo de verdad, con honeypot y rate-limit incluidos.
 
+## Aparecer en Google y Microsoft
+
+Que una web «aparezca» en un buscador no se activa desde el código: hay que **dar de
+alta el sitio** en cada buscador y esperar a que rastree. El código solo se encarga de
+que, cuando llegue, lo entienda bien. Esa parte ya está hecha.
+
+### Lo que la web ya trae puesto (no hay que tocar nada)
+
+| Pieza | Para qué sirve |
+|---|---|
+| `robots.txt` | Permite el rastreo y señala dónde está el sitemap |
+| `sitemap.xml` | Lista la home. `legal.html` y `404.html` quedan fuera a propósito (llevan `noindex`) |
+| `<meta name="robots" … max-image-preview:large>` | Sin esto Google enseña la foto en miniatura diminuta; con esto, sale grande |
+| `<link rel="canonical">` | Evita contenido duplicado |
+| JSON-LD `Farm` + `LocalBusiness` | Dirección, coordenadas, horarios, teléfono y ofertas. Es lo que alimenta el panel de negocio local |
+| JSON-LD `FAQPage` | Permite que las 8 preguntas salgan desplegables en los resultados |
+| `{clave}.txt` + `indexnow.sh` | Avisa a Microsoft Bing (y Yandex, Seznam, Naver) en minutos, sin esperar semanas |
+| `404.html` con `noindex` | Evita que una página de error acabe en los resultados |
+
+### Paso 1 — Google Search Console
+
+1. Entra en <https://search.google.com/search-console> con una cuenta de Google.
+2. **Añadir propiedad → Prefijo de URL** → `https://granja.pages.dev/`
+3. Te pedirá verificar. Como `pages.dev` es de Cloudflare y no controlas su DNS, los
+   métodos de DNS no sirven. Usa uno de estos dos:
+   - **Etiqueta HTML** (lo más rápido): copia el `<meta name="google-site-verification" …>`
+     que te da y pásamelo. Lo pongo en el `<head>` de `index.html` y se publica solo.
+   - **Archivo HTML**: descarga el `.html` que te dan, déjalo en la raíz del proyecto y
+     avísame para añadirlo a `build.sh`.
+4. Ya verificado, entra en **Sitemaps** y envía `sitemap.xml`.
+5. Opcional: en **Inspección de URL**, pega `https://granja.pages.dev/` y pulsa
+   «Solicitar indexación». Acelera la primera visita.
+
+### Paso 2 — Microsoft Bing Webmaster Tools
+
+1. Entra en <https://www.bing.com/webmasters> con una cuenta Microsoft.
+2. **Lo más fácil: importar desde Google Search Console.** Hay un botón para ello y te
+   trae el sitio ya verificado, sin repetir el proceso.
+3. Si prefieres hacerlo aparte: **Añadir sitio** → `https://granja.pages.dev/` →
+   verificar (mismos métodos que Google) → enviar `sitemap.xml`.
+4. Bing alimenta también a **Copilot** y a los resultados de Windows. Merece la pena.
+
+### Paso 3 — Avisar de los cambios (IndexNow)
+
+Cada vez que publiques algo nuevo, avisa a los buscadores. Tarda un minuto:
+
+```bash
+sh indexnow.sh
+```
+
+Google **no usa IndexNow**. Para Google, el aviso se da en Search Console con
+«Solicitar indexación», o simplemente esperando a que vuelva a rastrear.
+
+### Paso 4 — Ficha de Google (Google Maps) ← lo que más visitas trae
+
+Para una granja, aparecer en Maps y en el mapa de resultados importa más que la
+búsqueda normal. Es gratis:
+
+1. Entra en <https://www.google.com/business/> y crea la ficha de «Granja Piloño».
+2. Rellena **nombre, dirección, teléfono, horario y web**. Tienen que ser **idénticos**
+   a los de la web: si el teléfono de la ficha y el de la web no coinciden, Google
+   desconfía y el posicionamiento local baja.
+3. Verifica la propiedad. Google suele pedir un vídeo del local o una postal con un
+   código. Tarda unos días.
+4. Sube fotos reales y pide reseñas a los clientes: es el factor que más mueve la aguja.
+
+> **Esto está bloqueado hasta que haya datos reales.** La ficha exige un teléfono y una
+> dirección verificables. Hoy la web tiene un teléfono inventado (`+34 600 000 000`) y
+> las coordenadas son orientativas. Google rechaza o suspende fichas con datos que no
+> puede comprobar, y una ficha suspendida es difícil de recuperar.
+
+### Cuánto tarda
+
+- **Bing**: con IndexNow, de horas a un par de días.
+- **Google**: de unos días a varias semanas la primera vez. Un sitio nuevo tarda más:
+  Google necesita comprobar que es real y que aporta algo.
+- **Maps**: la ficha aparece en cuanto se verifica, pero tarda semanas en posicionarse.
+
+### Una advertencia honesta
+
+Un subdominio `granja.pages.dev` es de Cloudflare, no tuyo. Funciona y Google lo indexa,
+pero tiene dos límites: no transmite la confianza de un dominio propio y, si algún día
+compras uno, habrá que rehacer el alta en los buscadores y añadir redirecciones.
+
+Y hay un problema mayor: **Google no posiciona bien una web cuyo teléfono y email no
+existen.** El sitio es una demostración hasta que tenga los datos reales. La secuencia
+correcta es: datos reales → publicar → dar de alta en los buscadores → ficha de Maps.
+
 ## Antes de publicar — pendientes reales
 
 | Qué | Dónde |

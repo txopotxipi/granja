@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Solo se listan páginas indexables. legal.html queda fuera a propósito:
+     lleva <meta name="robots" content="noindex, follow">, y declarar en el
+     sitemap una URL marcada como noindex hace que Search Console la señale
+     como error. 404.html tampoco va, por la misma razón. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://granja.pages.dev/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-09-12</lastmod>
   </url>
 </urlset>

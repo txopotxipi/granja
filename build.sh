@@ -9,9 +9,16 @@
 #    Output directory:  dist
 # ============================================================
 set -e
+
+# Clave de IndexNow. El archivo {clave}.txt tiene que estar publicado en la
+# raíz del sitio para que Bing pueda comprobar que somos los dueños antes de
+# aceptar los avisos de indexación. Si se rota la clave, actualizar también
+# indexnow.sh.
+INDEXNOW_KEY="1333325af64a5be5f5dfc84353b1dac9"
+
 rm -rf dist
 mkdir -p dist
 cp -R index.html legal.html assets robots.txt sitemap.xml _headers 404.html .assetsignore \
-      manifest.webmanifest sw.js dist/
+      manifest.webmanifest sw.js "$INDEXNOW_KEY.txt" dist/
 echo "dist/ listo:"
 find dist -type f | sort

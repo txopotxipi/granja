@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Granja Piloño — Granja de cerdos en Galicia | Ignacio, Villa de Cruces</title>
 <meta name="description" content="Granja familiar de Ignacio en Piloño (Villa de Cruces, Pontevedra). Cerdos en establos amplios y luminosos, con la mejor alimentación y pleno cumplimiento del bienestar animal. Carne fresca, embutidos y cerdo por encargo.">
+
+<!-- Indexación. `max-image-preview:large` es el que importa: sin él Google
+     enseña la foto en miniatura diminuta; con él, sale a tamaño grande en los
+     resultados. `max-snippet:-1` deja que muestre la descripción completa. -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1">
+
 <meta property="og:title" content="Granja Piloño — Granja de cerdos en Galicia">
 <meta property="og:description" content="Establos amplios, alimentación de primera y bienestar animal certificado en Piloño (Pontevedra). Del corral a tu mesa, sin atajos.">
 <meta property="og:type" content="website">
@@ -52,10 +59,21 @@
       "description": "Granja familiar de cerdos en Piloño, Villa de Cruces (Pontevedra). Establos amplios, alimentación de calidad y pleno cumplimiento de la normativa de bienestar animal.",
       "url": "https://granja.pages.dev/",
       "image": "https://granja.pages.dev/assets/img/og-granja.jpg",
+      "logo": "https://granja.pages.dev/assets/img/icono-512.png",
       "telephone": "+34 600 000 000",
       "email": "hola@granjapilono.es",
       "priceRange": "€€",
+      "currenciesAccepted": "EUR",
+      "slogan": "Del corral a tu mesa, sin atajos",
       "foundingDate": "1987",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+34 600 000 000",
+        "email": "hola@granjapilono.es",
+        "contactType": "customer service",
+        "areaServed": "ES",
+        "availableLanguage": ["es", "gl"]
+      },
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Santa María de Piloño",
@@ -69,6 +87,7 @@
         "latitude": 42.7920,
         "longitude": -8.2200
       },
+      "hasMap": "https://www.google.com/maps/search/?api=1&query=42.7920,-8.2200",
       "areaServed": [
         { "@type": "AdministrativeArea", "name": "Galicia" },
         { "@type": "AdministrativeArea", "name": "Asturias" },
