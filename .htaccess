@@ -51,14 +51,26 @@
 
 # ---------- Caché y cabeceras de seguridad ----------
 <IfModule mod_headers.c>
-  # Assets (CSS, JS, fuentes e imágenes): un año, inmutable.
-  # Todos los recursos del sitio viven en assets/ con nombre estable.
-  <FilesMatch "\.(css|js|woff2|webp|jpe?g|png|gif|svg|ico)$">
+  # CSS, JS e imágenes: una semana. Los nombres de archivo no llevan
+  # versión, así que una caché más larga enseñaría la web antigua
+  # después de cada publicación (misma política que _headers).
+  <FilesMatch "\.(css|js|webp|jpe?g|png|gif|svg|ico)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+
+  # Fuentes: un año, inmutables. Nunca cambian de contenido.
+  <FilesMatch "\.woff2?$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
 
   # HTML: siempre revalidado, para que los cambios se vean al publicar
   <FilesMatch "\.html?$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+
+  # El service worker tampoco se cachea: si el navegador se queda con
+  # una versión antigua, los cambios de la web dejan de llegar.
+  <FilesMatch "^sw\.js$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
 
@@ -71,7 +83,13 @@
 
 # ---------- Compresión (solo texto; WebP y WOFF2 ya van comprimidos) ----------
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml text/xml application/xml
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json application/manifest+json image/svg+xml text/xml application/xml
+</IfModule>
+
+# ---------- Tipos MIME que algunos hostings no conocen de serie ----------
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType font/woff2 .woff2
 </IfModule>
 
 # ---------- Página de error 404 ----------

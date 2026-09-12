@@ -13,6 +13,7 @@
 # Capa de trabajo del agente (memoria, objetivos, skills)
 .agents
 AGENTS.md
+.workbuddy-ai
 
 # Documentación interna
 *.md

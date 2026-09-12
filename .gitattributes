@@ -1,0 +1,26 @@
+# ============================================================
+#  .gitattributes — finales de línea
+#
+#  Motivo: el proyecto se desarrolla en Windows (CRLF) pero se
+#  despliega en Cloudflare Pages, que es Linux y ejecuta
+#  `sh build.sh`. Un `build.sh` con CRLF falla con errores del
+#  tipo ": not found" y tumba el despliegue.
+#
+#  Esta regla fuerza LF en el repositorio y en el disco, así que
+#  el problema no puede reaparecer por descuido.
+# ============================================================
+
+# Todo el texto con LF, detectando binarios automáticamente.
+* text=auto eol=lf
+
+# Scripts y configuración de servidor: LF obligatorio.
+*.sh    text eol=lf
+.htaccess text eol=lf
+_headers  text eol=lf
+.assetsignore text eol=lf
+
+# Binarios: git no los toca nunca.
+*.webp  binary
+*.jpg   binary
+*.png   binary
+*.woff2 binary

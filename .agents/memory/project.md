@@ -9,52 +9,58 @@ when confirmed project facts change.
 
 - Sitio web estático: HTML + CSS + JS vanilla, sin build ni dependencias externas (0 peticiones a terceros).
 - Formulario: validación en el navegador + envío `mailto:` con asunto y cuerpo (0 dependencias, pensado para Cloudflare Pages). `enviar.php` (honeypot + rate-limit + UTF-8) queda como variante lista para un hosting Apache con PHP 8+; no se publica en Pages.
+- **PWA**: `manifest.webmanifest` + `sw.js`. El service worker precarga el shell, sirve HTML network-first (nunca enseña una versión vieja) y el resto stale-while-revalidate. Al cambiar `style.css` o `main.js` hay que subir `VERSION` en `sw.js`.
 - **Hosting real: Cloudflare Pages** (`https://granja.pages.dev`), conectado al repo GitHub (`txopotxipi/granja`). Es hosting estático: no ejecuta PHP ni lee `.htaccess`; sirve `enviar.php` como texto plano y cualquier ruta inexistente como 200 + index.html (soft-404, hasta añadir `404.html`). HTTPS, brotli, `nosniff` y `referrer-policy` los pone Cloudflare de serie; caché fina y resto de cabeceras requieren `_headers`, y los bloqueos de archivos internos se resuelven no publicándolos (build command a `dist/`). El `.htaccess` queda como preparación por si se migra a hosting Apache.
-- Fuentes: Fraunces y Archivo **autohospedadas** en `assets/fonts/` (WOFF2 variable, subset latin, ~180 KB; `@font-face` al inicio de `style.css`).
+- Fuentes: Fraunces y Archivo **autohospedadas** en `assets/fonts/` (WOFF2 variable, subset latin, ~180 KB; `@font-face` al inicio de `style.css`) y **precargadas** desde el `<head>`.
+- Imágenes: cada foto en tres tamaños (`nombre.webp` 1200 px, `nombre-900.webp`, `nombre-600.webp`) servidas con `srcset`/`sizes`. Al sustituir una foto hay que regenerar sus variantes.
 - Agent layer: SlashStack (instalado también en la raíz del workspace `D:\granja`).
 - Git: repositorio propio con rama `main` y remoto `origin`.
 
 ## Estructura
 
-- `index.html` — single page (hero, filosofía, cifras, productos acordeón, proceso sticky, galería, cita, contacto).
+- `index.html` — single page con 7 secciones numeradas: hero, filosofía (01), productos (02), calculadora (03), proceso (04), finca + reserva (05), FAQ (06), contacto (07); más marquee, cifras, cita y footer.
 - `legal.html` — aviso legal, privacidad (RGPD) y cookies.
-- `enviar.php` — variante PHP del formulario para hosting Apache (validación server-side + honeypot + rate-limit + UTF-8). NO se publica en Pages (build.sh lo excluye).
-- `_headers` — seguridad (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) y caché para Cloudflare Pages (assets 7 días, fuentes 1 año immutable).
-- `404.html` — 404 real autocontenida con `noindex`; elimina el soft-404 de Pages (rutas inexistentes devolvían 200 + index.html).
+- `manifest.webmanifest` — PWA: nombre, iconos (192/512/maskable) y 3 atajos.
+- `sw.js` — service worker (constante `VERSION` a subir en cada publicación).
+- `enviar.php` — variante PHP del formulario para hosting Apache (validación server-side + honeypot + rate-limit por IP real + guarda de velocidad + UTF-8). Responde JSON si llega `form_ajax=1` (fetch) y una página HTML de cortesía si no (envío sin JavaScript). NO se publica en Pages (build.sh lo excluye).
+- `_headers` — seguridad (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) y caché para Cloudflare Pages (assets 7 días, fuentes 1 año immutable, HTML revalidado, sw.js sin caché).
+- `404.html` — 404 real autocontenida con `noindex`; elimina el soft-404 de Pages.
 - `build.sh` — build de Pages: copia solo lo público a `dist/` (en el panel: build command `sh build.sh`, output directory `dist`).
-- `.htaccess` — HTTPS sin www, caché (assets 1 año inmutable / HTML no-cache), compresión, cabeceras de seguridad y bloqueo 404 de `.git/`, `.agents/`, `*.md` y `*.py`.
+- `.htaccess` — HTTPS sin www, caché alineada con `_headers`, compresión, tipos MIME (`webmanifest`, `woff2`), cabeceras de seguridad y bloqueo 404 de `.git/`, `.agents/`, `*.md` y `*.py`.
 - `tmp-log/.htaccess` — acceso HTTP denegado (Apache 2.2 y 2.4); el resto de `tmp-log/` está en `.gitignore`.
 - `sitemap.xml` — solo la home, con dominio placeholder.
 - `robots.txt` — indexación permitida + declaración del sitemap.
-- `assets/css/style.css` · `assets/js/main.js` · `assets/img/*.webp` (14 fotos) · `assets/fonts/` (3 WOFF2 variables).
-- `assets/img/og-granja.jpg` — imagen social 1200×630 referenciada por `og:image`/`twitter:image` (pendiente de crear).
-- La raíz está limpia: las capturas de desarrollo y el `brief.md` obsoleto fueron eliminados.
+- `assets/css/style.css` · `assets/js/main.js` · `assets/img/` (14 fotos × 3 tamaños + 4 iconos + `og-granja.jpg` 1200×630) · `assets/fonts/` (3 WOFF2 variables).
 
 ## Commands
 
-- Build Cloudflare Pages: `sh build.sh` → genera `dist/` con solo lo público (en el panel de Pages: build command `sh build.sh`, output `dist`).
+- Build Cloudflare Pages: `sh build.sh` → genera `dist/` con solo lo público. **Aviso:** el script empieza con `rm -rf dist`.
 - Lint PHP: `php -l enviar.php`.
-- Servidor local con PHP (probar formulario): `php -S 127.0.0.1:9090` desde `granja-cerdos/` (el 8080 puede dar error de permisos de socket en algunos entornos).
-- Sin servidor: abrir `index.html` directamente (el formulario muestra aviso alternativo por email).
+- Servidor local con PHP: `php -S 127.0.0.1:9090` desde `granja-cerdos/`.
+- Probar el formulario sin servidor: abrir `index.html` (usa `mailto:`).
 
 ## Convenciones
 
 - Contenido y UI en español (`lang="es"`); identificadores JS/CSS en español (`alternarMenu`, `marcarCampo`, `.prod-cab`).
-- Paleta CSS vía custom properties en `:root`: `--crema`, `--tinta`, `--teja`, `--oliva`.
-- Animaciones solo con `transform`/`opacity`; `prefers-reduced-motion` respetado.
-- Patrones JS: `IntersectionObserver` para reveals, contadores y pasos del proceso; acordeón de productos con `aria-expanded`.
-- Acordeón de productos: los ids (`prod-cab-N`, `prod-body-N`) y el ARIA (`aria-controls`, `role="region"`, `aria-labelledby`) se generan desde `main.js` — no duplicarlos en el HTML.
-- Accesibilidad: `aria-live` en errores de formulario, `:focus-visible`, `alt` en todas las imágenes.
+- Paleta CSS vía custom properties en `:root`: `--crema`, `--crema-2`, `--tinta`, `--tinta-2`, `--teja`, `--teja-clara`, `--oliva`, `--oliva-clara`, `--linea`. No dejar variables sin uso.
+- Animaciones solo con `transform`/`opacity`; `prefers-reduced-motion` respetado (bloque `*` con `!important` al final de `style.css`).
+- Patrones JS: `IntersectionObserver` para reveals, contadores y pasos del proceso; un único listener de scroll con `requestAnimationFrame` para barra de progreso, botón de WhatsApp y scrollspy.
+- Acordeón de productos: los ids (`prod-cab-N`, `prod-body-N`) y el ARIA (`aria-controls`, `role="region"`, `aria-labelledby`) se generan desde `main.js` — no duplicarlos en el HTML. Los paneles cerrados se ocultan con `visibility:hidden` (no solo `0fr`) para que no reciban foco.
+- FAQ con `<details>`/`<summary>` nativos; el JS solo cierra las demás al abrir una. Las respuestas están duplicadas en el JSON-LD `FAQPage`: si cambia una, cambiar la otra.
+- Ajustes centralizados al inicio de `main.js`: `WHATSAPP`, `DESTINO_EMAIL`, `ENDPOINT_FORMULARIO`; y en la calculadora: `PRECIO`, `PESO`, `NOMBRE`, `RACION`.
+- Accesibilidad: `aria-live` en errores de formulario, `:focus-visible`, `alt` en todas las imágenes, foco encerrado en el visor de fotos.
 
 ## Riesgos y restricciones duraderas
 
-- Los datos de contacto son placeholder (teléfono `+34 600 000 000`, email `hola@granjapilono.es`): deben sustituirse antes de publicar.
+- Los datos de contacto son placeholder (teléfono `+34 600 000 000`, email `hola@granjapilono.es`, WhatsApp `34600000000`): deben sustituirse antes de publicar. Están en `main.js` (`WHATSAPP`, `DESTINO_EMAIL`), `index.html`, `legal.html` y `enviar.php`.
+- **Los precios y pesos de la calculadora son orientativos** (`PRECIO`, `PESO` en `main.js`). Al cambiarlos, revisar también la FAQ y el `makesOffer` del JSON-LD.
 - El testimonio del `index.html` es de relleno hasta tener uno real.
-- Favicon, `og:image`, `og:url`, `canonical` y `twitter:card` ya existen; el dominio es el placeholder `https://granjapilono.es/` hasta conocer el real (editar el `<head>` de `index.html`, `sitemap.xml` y la línea `Sitemap:` de `robots.txt`).
-- `og:image` y `twitter:image` apuntan a `assets/img/og-granja.jpg` (JPG 1200×630 para previsualizaciones sociales): hay que crearlo manualmente antes de publicar o la vista previa en WhatsApp/redes saldrá sin imagen.
-- `.htaccess` y `tmp-log/.htaccess` solo aplican en hosting Apache; en Cloudflare Pages (producción actual) no se leen — y el propio `.htaccess` se sirve como archivo público. Al subir por FTP a un Apache, activar "mostrar archivos ocultos" para que los `.htaccess` se copien al servidor.
+- Favicon, `og:image` (existe, 1200×630), `canonical` y `twitter:card` ya están puestos; el dominio es el placeholder `https://granja.pages.dev/` hasta conocer el real (editar el `<head>` de `index.html`, `sitemap.xml` y la línea `Sitemap:` de `robots.txt`).
+- Las coordenadas GPS del JSON-LD son orientativas (Villa de Cruces) y hay que confirmarlas.
+- Los enlaces de redes sociales del footer apuntan a `#`.
+- `.htaccess` y `tmp-log/.htaccess` solo aplican en hosting Apache; en Cloudflare Pages (producción actual) no se leen. Al subir por FTP a un Apache, activar "mostrar archivos ocultos" para que los `.htaccess` se copien.
 - El formulario en Pages envía vía `mailto:` (decisión del usuario, 0 dependencias): funciona sin servidor, pero abre el correo del visitante. Migrar a Cloudflare Email Routing cuando exista dominio propio (gratis, sin terceros) o a una Pages Function con Resend.
-- Pendiente en el panel de Cloudflare Pages: fijar build command `sh build.sh` y output `dist` — sin ese paso el deploy sigue publicando el repo entero (`.agents/`, `*.md`, `enviar.php` visibles y soft-404).
-- Fallback no-JS resuelto: `class="no-js"` en `<html>` + `.no-js .reveal` visible + contadores con cifra real que `main.js` reinicia a 0 al cargar.
-- El envío depende de `mail()`; si cae en spam, migrar a SMTP (PHPMailer) — hay un TODO en `enviar.php`.
-- Enlaces de redes sociales del footer apuntan a `#` hasta tener perfiles reales.
+- Pendiente en el panel de Cloudflare Pages: fijar build command `sh build.sh` y output `dist`.
+- El envío por `mail()` depende del servidor; si cae en spam, migrar a SMTP (PHPMailer) — hay un TODO en `enviar.php`.
+- `enviar.php` limita por IP priorizando `CF-Connecting-IP` / `X-Real-IP` sobre `REMOTE_ADDR`, para no aplicar un cupo global cuando hay un proxy delante.
+- Al publicar cambios en `style.css` o `main.js`: subir `VERSION` en `sw.js` o los navegadores seguirán sirviendo la copia guardada.

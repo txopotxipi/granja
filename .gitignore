@@ -1,6 +1,11 @@
 # Capturas de pantalla y mockups de diseño locales
 *.png
 
+# EXCEPCIÓN IMPORTANTE: los iconos de la PWA y el apple-touch-icon SÍ deben
+# versionarse. Si no, Cloudflare Pages despliega sin ellos y el manifest
+# devuelve 404 en los iconos (la PWA deja de ser instalable).
+!assets/img/icono-*.png
+
 # Sistema operativo
 .DS_Store
 Thumbs.db
@@ -10,6 +15,10 @@ desktop.ini
 .vscode/
 .idea/
 .claude/
+
+# Estado local de la herramienta de IA (memoria de sesión, no es código fuente).
+# El conocimiento duradero del proyecto vive versionado en .agents/memory/.
+.workbuddy-ai/
 
 # Python / cachés
 __pycache__/

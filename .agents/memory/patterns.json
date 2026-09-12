@@ -1,4 +1,55 @@
 {
   "version": 1,
-  "patterns": []
+  "patterns": [
+    {
+      "id": "verificar-en-chrome-real",
+      "titulo": "Verificar el sitio en Chrome de verdad, no solo leyendo el código",
+      "cuando": "Después de tocar HTML, CSS o JS. Revisar el código no detecta fallos de foco, de layout ni de estado.",
+      "por_que": "En la sesión del 2026-09-12 esta batería encontró dos bugs que la revisión estática no vio: el aviso (toast) quedaba a medio ocultar y el texto del JSON-LD no coincidía con la FAQ visible.",
+      "montaje": [
+        "Chrome del sistema: C:/Program Files/Google/Chrome/Application/chrome.exe",
+        "Cliente: puppeteer-core instalado en el espacio de trabajo de Node gestionado.",
+        "IMPORTANTE: el script .mjs debe vivir en la carpeta que contiene node_modules. ESM ignora NODE_PATH.",
+        "Servidor: php -S 127.0.0.1:9095 desde la raíz del proyecto (en segundo plano)."
+      ],
+      "trampas": [
+        "Las herramientas del asistente heredan un proxy por variables de entorno (http_proxy/https_proxy -> http://127.0.0.1:52529), que rompe localhost. NO es un proxy de Windows: ProxyEnable esta a 0 y no hay nada que arreglar en el sistema. Solo hay que pasar las banderas al proceso propio: Chrome con --no-proxy-server y --proxy-bypass-list=*, curl con --noproxy '*'.",
+        "Usar headless: 'new'. Con el modo antiguo fallan matchMedia y algunas APIs.",
+        "page.click() desplaza la página para dejar el elemento a la vista: el scroll cambia entre bloques de pruebas. Recargar antes de comprobar estados que dependen del scroll (botón de WhatsApp, scrollspy).",
+        "Para probar rutas de móvil hay que usar setViewport({isMobile:true, hasTouch:true}), o matchMedia('(hover:none)') no coincide y el código móvil nunca se ejecuta.",
+        "Para inspeccionar window.open, sobrescribirlo antes del clic y devolver un objeto truthy (si devuelve null, el código hace fallback a location.href).",
+        "En español toLocaleString('es-ES') NO agrupa números de 4 cifras: 2106,00 es correcto, 2.106,00 no. No es un bug."
+      ],
+      "comprobaciones_que_merecen_la_pena": [
+        "Interacciones: calculadora (valores esperados calculados a mano), acordeones, visor, FAQ.",
+        "Foco: que un panel cerrado NO sea enfocable (getComputedStyle visibility === 'hidden') y que el foco no se escape de los diálogos.",
+        "Contraste AA: calcular la relación de contraste en el navegador sobre las tarjetas oscuras.",
+        "Sin JavaScript: desactivarlo y comprobar que el contenido sigue visible y el formulario avisa.",
+        "Integridad: que existan todos los archivos de srcset/src/href y que todas las anclas tengan destino.",
+        "Errores de consola: filtrar los mailto: (no hay gestor de correo en headless, es un falso positivo)."
+      ]
+    },
+    {
+      "id": "imagenes-responsive",
+      "titulo": "Generar las variantes responsive de las fotos",
+      "cuando": "Al añadir o sustituir cualquier foto de assets/img/.",
+      "pasos": [
+        "Cada foto necesita nombre.webp (1200 px), nombre-900.webp y nombre-600.webp.",
+        "Con Pillow: Image.open(origen).convert('RGB').resize((ancho, alto), Image.LANCZOS).save(destino, 'WEBP', quality=80, method=6).",
+        "El HTML lleva srcset con descriptores 600w/900w/1200w y sizes ajustado al ancho real que ocupa la imagen.",
+        "Si el original mide menos que un ancho, no generes esa variante (no se amplía una imagen)."
+      ],
+      "por_que": "Sin las variantes, el móvil se baja las 14 fotos a 1200 px: 2,3 MB en lugar de ~1 MB."
+    },
+    {
+      "id": "publicar-cambios-de-css-o-js",
+      "titulo": "Publicar cambios de CSS o JS sin que los visitantes vean la versión vieja",
+      "cuando": "Cada vez que se modifique style.css o main.js.",
+      "pasos": [
+        "Subir el número de VERSION en sw.js (por ejemplo 'v1' a 'v2').",
+        "Los nombres de archivo no llevan hash: la versión del service worker es lo único que fuerza la renovación.",
+        "Comprobar que _headers y .htaccess siguen sirviendo sw.js con Cache-Control: no-cache."
+      ]
+    }
+  ]
 }

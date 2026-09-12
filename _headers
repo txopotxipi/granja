@@ -20,3 +20,16 @@
 # Fuentes: un año, inmutable. Nunca cambian de contenido.
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
+
+# HTML: siempre revalidado, para que los cambios se vean al publicar.
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# El service worker NUNCA se cachea: si el navegador se queda con una
+# versión antigua, los cambios de la web dejan de llegar.
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=604800

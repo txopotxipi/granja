@@ -2,6 +2,11 @@
    INTERACCIONES — todo funciona sin librerías externas
    ============================================================ */
 
+/* --- Ajustes de la casa (cámbialos aquí y cambian en toda la web) --- */
+const WHATSAPP       = '34600000000';        // <- número real, sin + ni espacios
+const DESTINO_EMAIL  = 'hola@granjapilono.es';
+const ENDPOINT_FORMULARIO = '';              // <- URL del servicio que reciba el mensaje (ver README)
+
 /* --- Cabecera: fondo al hacer scroll --- */
 const header = document.getElementById('header');
 const anadirScroll = () => header.classList.toggle('scrolled', scrollY > 30);
@@ -62,7 +67,43 @@ function parallax(){
 }
 addEventListener('scroll', () => requestAnimationFrame(parallax), {passive:true}); parallax();
 
-/* --- Productos: acordeón + imagen flotante que sigue al cursor --- */
+/* ============================================================
+   BARRA DE PROGRESO, WHATSAPP FLOTANTE Y NAVEGACIÓN ACTIVA
+   Un solo listener para los tres: menos trabajo por scroll.
+   ============================================================ */
+const progreso = document.getElementById('progreso');
+const waFlotante = document.getElementById('waFlotante');
+const navDesk = document.getElementById('navDesk');
+const enlacesNav = navDesk ? [...navDesk.querySelectorAll('a')] : [];
+const seccionesNav = enlacesNav
+  .map(a => document.querySelector(a.getAttribute('href')))
+  .filter(Boolean);
+
+function alScroll(){
+  // Barra de progreso de lectura
+  const recorrido = document.documentElement.scrollHeight - innerHeight;
+  progreso.style.width = (recorrido > 0 ? Math.min(scrollY / recorrido, 1) * 100 : 0) + '%';
+
+  // Acceso directo a WhatsApp: aparece al dejar atrás el hero
+  waFlotante.classList.toggle('ver', scrollY > innerHeight * .7);
+
+  // Navegación activa (scrollspy)
+  let activo = '';
+  seccionesNav.forEach(sec => {
+    if(sec.getBoundingClientRect().top <= innerHeight * .35) activo = sec.id;
+  });
+  enlacesNav.forEach(a => {
+    if(a.getAttribute('href') === '#' + activo) a.setAttribute('aria-current', 'true');
+    else a.removeAttribute('aria-current');
+  });
+}
+addEventListener('scroll', () => requestAnimationFrame(alScroll), {passive:true});
+addEventListener('resize', () => requestAnimationFrame(alScroll), {passive:true});
+alScroll();
+
+/* ============================================================
+   PRODUCTOS: acordeón + imagen flotante que sigue al cursor
+   ============================================================ */
 const productos = document.querySelectorAll('.prod');
 const flotante = document.getElementById('flotante');
 const flotImgs = flotante.querySelectorAll('img');
@@ -110,20 +151,277 @@ if(ratonFino){
   })();
 }
 
-/* --- Botón "Pedir información": preselecciona asunto y salta al formulario --- */
+/* --- Llevar el visitante al formulario con el contexto ya puesto --- */
 const asunto = document.getElementById('asunto');
 const formulario = document.getElementById('form');
+
+/**
+ * Señala el formulario, se desplaza hasta él y deja el cursor en el nombre.
+ * El foco se aplica al terminar el desplazamiento y SOLO si el visitante no
+ * se ha ido a otra parte entretanto: si no, le robaríamos el foco de lo que
+ * acaba de abrir (por ejemplo, el visor de fotos).
+ */
+function llevarAlFormulario(origen){
+  document.getElementById('contacto').scrollIntoView({behavior:'smooth'});
+  formulario.classList.add('destello');
+  setTimeout(() => formulario.classList.remove('destello'), 1800);
+  setTimeout(() => {
+    const foco = document.activeElement;
+    if(foco === origen || foco === document.body){
+      document.getElementById('nombre').focus({preventScroll:true});
+    }
+  }, 700);
+}
+
 document.querySelectorAll('[data-producto]').forEach(btn => {
   btn.addEventListener('click', () => {
     asunto.value = btn.dataset.producto;
-    document.getElementById('contacto').scrollIntoView({behavior:'smooth'});
-    formulario.classList.add('destello');
-    setTimeout(() => formulario.classList.remove('destello'), 1800);
-    setTimeout(() => document.getElementById('nombre').focus({preventScroll:true}), 700);
+    llevarAlFormulario(btn);
   });
 });
 
-/* --- Proceso: foto sticky que cambia según el paso visible --- */
+/* ============================================================
+   CALCULADORA DE PEDIDO
+   Ración media: 150 g de carne por persona y comida.
+   ============================================================ */
+const PRECIO  = { piezas: 9.00, media: 6.80, entera: 5.90 };
+const PESO    = { piezas: 0,    media: 45,   entera: 90   };
+const NOMBRE  = { piezas: 'Piezas sueltas', media: 'Media canal', entera: 'Canal entera' };
+const RACION  = 0.15;
+
+const calcPersonas  = document.getElementById('calcPersonas');
+const calcRaciones  = document.getElementById('calcRaciones');
+const calcKg        = document.getElementById('calcKg');
+const calcNota      = document.getElementById('calcNota');
+
+const eur = n => n.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
+const kg  = n => n.toLocaleString('es-ES', {maximumFractionDigits:1}) + ' kg';
+
+function formatoElegido(){
+  return document.querySelector('input[name="calcFormato"]:checked').value;
+}
+
+function calcular(){
+  const personas = +calcPersonas.value;
+  const raciones = +calcRaciones.value;
+  const formato  = formatoElegido();
+
+  document.getElementById('calcPersonasOut').textContent = personas;
+  document.getElementById('calcRacionesOut').textContent = raciones;
+
+  // Consumo anual estimado
+  const consumo = Math.round(personas * raciones * RACION * 52);
+
+  // Formato que mejor encaja según el consumo
+  let recomendado = 'piezas';
+  if(consumo >= 70) recomendado = 'entera';
+  else if(consumo >= 25) recomendado = 'media';
+
+  const costePiezas  = consumo * PRECIO.piezas;
+  const pesoFormato  = PESO[formato];
+  const costeFormato = pesoFormato ? pesoFormato * PRECIO[formato] : costePiezas;
+  const ahorro       = costePiezas - costeFormato;
+
+  calcKg.textContent = consumo;
+  document.getElementById('calcFormatoRec').textContent = NOMBRE[recomendado];
+  document.getElementById('calcPeso').textContent    = pesoFormato ? kg(pesoFormato) : 'Al peso';
+  document.getElementById('calcCoste').textContent   = eur(costeFormato);
+  document.getElementById('calcEfectivo').textContent = eur(PRECIO[formato]) + '/kg';
+
+  // El ahorro siempre se mide contra comprar piezas sueltas. Si el
+  // visitante ya está en piezas sueltas, no hay nada que restar: lo útil
+  // es decirle cuánto se ahorraría si cambiara al formato recomendado.
+  const ddAhorro = document.getElementById('calcAhorro');
+  const dtAhorro = document.getElementById('calcAhorroEtiqueta');
+  if(formato === 'piezas' && recomendado !== 'piezas'){
+    dtAhorro.textContent = `Ahorrarías con ${NOMBRE[recomendado].toLowerCase()}`;
+    ddAhorro.textContent = eur(costePiezas - PESO[recomendado] * PRECIO[recomendado]);
+  } else if(formato === 'piezas'){
+    dtAhorro.textContent = 'Ahorro frente a piezas sueltas';
+    ddAhorro.textContent = '—';
+  } else {
+    dtAhorro.textContent = 'Ahorro frente a piezas sueltas';
+    ddAhorro.textContent = eur(ahorro);
+  }
+
+  // Nota contextual: avisa si el formato elegido no encaja con el consumo
+  let nota;
+  if(pesoFormato && consumo < pesoFormato * .75){
+    nota = `Una ${NOMBRE[formato].toLowerCase()} son unos ${kg(pesoFormato)}: te sobrarían unos ${kg(Math.round(pesoFormato - consumo))}. Se conserva congelada y en embutidos, pero quizá te encaje mejor ${NOMBRE[recomendado].toLowerCase()}.`;
+  } else if(pesoFormato && consumo > pesoFormato){
+    nota = `Con ${NOMBRE[formato].toLowerCase()} te quedarías corto: calculas unos ${kg(consumo)} al año. Te encajaría mejor ${NOMBRE[recomendado].toLowerCase()}.`;
+  } else if(recomendado !== formato){
+    nota = `Para tu consumo, lo que mejor encaja es ${NOMBRE[recomendado].toLowerCase()}.`;
+  } else {
+    nota = 'Buena elección: es el formato que mejor encaja con tu consumo.';
+  }
+  calcNota.textContent = nota;
+
+  return { consumo, formato, personas };
+}
+
+if(calcPersonas){
+  calcPersonas.addEventListener('input', calcular);
+  calcRaciones.addEventListener('input', calcular);
+  document.querySelectorAll('input[name="calcFormato"]').forEach(r => r.addEventListener('change', calcular));
+  calcular();
+}
+
+/* Abre WhatsApp con un mensaje ya escrito (el visitante solo pulsa enviar) */
+function abrirWhatsApp(texto){
+  const url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(texto);
+  const ventana = window.open(url, '_blank', 'noopener');
+  if(!ventana) window.location.href = url;
+}
+
+/* "Pedir este formato": lleva el resultado al canal que elija el visitante */
+const calcPedir = document.getElementById('calcPedir');
+if(calcPedir){
+  calcPedir.addEventListener('click', () => {
+    const { consumo, formato, personas } = calcular();
+    abrirWhatsApp(
+      `Hola, he usado la calculadora de la web de Granja Piloño.\n\n` +
+      `Somos ${personas} en casa y calculo unos ${consumo} kg de cerdo al año.\n` +
+      `Me interesa: ${NOMBRE[formato]} (${PESO[formato] ? kg(PESO[formato]) : 'al peso'}).\n\n` +
+      `¿Me confirmáis precio y disponibilidad?`
+    );
+  });
+
+  document.getElementById('calcFormulario').addEventListener('click', e => {
+    const { consumo, formato, personas } = calcular();
+    asunto.value = 'Cerdo entero por encargo';
+    document.getElementById('mensaje').value =
+      `Hola, he usado la calculadora: somos ${personas} en casa y calculo unos ${consumo} kg de cerdo al año. ` +
+      `Me interesa ${NOMBRE[formato].toLowerCase()} (${PESO[formato] ? kg(PESO[formato]) : 'al peso'}). ¿Me confirmáis precio y disponibilidad?`;
+    llevarAlFormulario(e.currentTarget);
+  });
+}
+
+/* ============================================================
+   RESERVA DE VISITA: los próximos sábados, calculados en vivo
+   ============================================================ */
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const reservaDia = document.getElementById('reservaDia');
+const reservaForm = document.getElementById('reservaForm');
+
+if(reservaDia){
+  const hoy = new Date();
+  hoy.setHours(0,0,0,0);
+  // Próximo sábado (si hoy es sábado, salta al siguiente: no se reserva el mismo día)
+  const primerSabado = new Date(hoy);
+  primerSabado.setDate(hoy.getDate() + ((6 - hoy.getDay() + 7) % 7 || 7));
+
+  for(let i = 0; i < 6; i++){
+    const fecha = new Date(primerSabado);
+    fecha.setDate(primerSabado.getDate() + i * 7);
+    const opcion = document.createElement('option');
+    opcion.value = fecha.toISOString().slice(0, 10);
+    opcion.textContent = `sábado ${fecha.getDate()} de ${MESES[fecha.getMonth()]}`;
+    reservaDia.appendChild(opcion);
+  }
+}
+
+if(reservaForm){
+  reservaForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const personas = Math.min(12, Math.max(1, parseInt(document.getElementById('reservaPersonas').value, 10) || 1));
+    document.getElementById('reservaPersonas').value = personas;
+    abrirWhatsApp(
+      `Hola, quiero reservar una visita a la Granja Piloño.\n\n` +
+      `Día: ${reservaDia.options[reservaDia.selectedIndex].textContent}\n` +
+      `Turno: ${document.getElementById('reservaTurno').value}\n` +
+      `Personas: ${personas}\n\n` +
+      `¿Me confirmáis disponibilidad?`
+    );
+  });
+}
+
+/* ============================================================
+   PREGUNTAS FRECUENTES: solo una abierta a la vez
+   ============================================================ */
+const faqs = document.querySelectorAll('.faq-item');
+faqs.forEach(faq => {
+  faq.addEventListener('toggle', () => {
+    if(faq.open) faqs.forEach(otro => { if(otro !== faq) otro.open = false; });
+  });
+});
+
+/* ============================================================
+   VISOR DE FOTOS (galería)
+   ============================================================ */
+const galeria = document.getElementById('galeria');
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lbImg');
+const lbCaption = document.getElementById('lbCaption');
+const lbContador = document.getElementById('lbContador');
+const lbCerrar = document.getElementById('lbCerrar');
+const botonesFoto = galeria ? [...galeria.querySelectorAll('.g-abrir')] : [];
+let lbIndice = 0;
+let lbFocoPrevio = null;
+
+function lbPintar(indice){
+  lbIndice = (indice + botonesFoto.length) % botonesFoto.length;
+  const img = botonesFoto[lbIndice].querySelector('img');
+  const caption = botonesFoto[lbIndice].closest('figure').querySelector('figcaption');
+  lbImg.src = img.currentSrc || img.src;
+  lbImg.alt = img.alt;
+  lbCaption.textContent = caption ? caption.textContent : '';
+  lbContador.textContent = `${lbIndice + 1} / ${botonesFoto.length}`;
+}
+
+function lbAbrir(indice){
+  lbFocoPrevio = document.activeElement;
+  lbPintar(indice);
+  lightbox.hidden = false;
+  requestAnimationFrame(() => lightbox.classList.add('ver'));
+  document.body.classList.add('sin-scroll');
+  lbCerrar.focus();
+}
+
+function lbOcultar(){
+  lightbox.classList.remove('ver');
+  document.body.classList.remove('sin-scroll');
+  setTimeout(() => { lightbox.hidden = true; }, 300);
+  if(lbFocoPrevio) lbFocoPrevio.focus();
+}
+
+if(lightbox && botonesFoto.length){
+  botonesFoto.forEach((btn, i) => btn.addEventListener('click', () => lbAbrir(i)));
+  lbCerrar.addEventListener('click', lbOcultar);
+  document.getElementById('lbPrev').addEventListener('click', () => lbPintar(lbIndice - 1));
+  document.getElementById('lbNext').addEventListener('click', () => lbPintar(lbIndice + 1));
+
+  // Cerrar al pulsar fuera de la foto
+  lightbox.addEventListener('click', e => { if(e.target === lightbox) lbOcultar(); });
+
+  // Teclado: Escape cierra, flechas navegan, Tab se queda dentro
+  document.addEventListener('keydown', e => {
+    if(lightbox.hidden) return;
+    if(e.key === 'Escape') lbOcultar();
+    else if(e.key === 'ArrowLeft') lbPintar(lbIndice - 1);
+    else if(e.key === 'ArrowRight') lbPintar(lbIndice + 1);
+    else if(e.key === 'Tab'){
+      const foco = [...lightbox.querySelectorAll('button')];
+      const i = foco.indexOf(document.activeElement);
+      if(e.shiftKey && i <= 0){ e.preventDefault(); foco[foco.length - 1].focus(); }
+      else if(!e.shiftKey && i === foco.length - 1){ e.preventDefault(); foco[0].focus(); }
+    }
+  });
+
+  // Deslizar con el dedo
+  let toqueX = null;
+  lightbox.addEventListener('touchstart', e => { toqueX = e.changedTouches[0].clientX; }, {passive:true});
+  lightbox.addEventListener('touchend', e => {
+    if(toqueX === null) return;
+    const recorrido = e.changedTouches[0].clientX - toqueX;
+    if(Math.abs(recorrido) > 50) lbPintar(lbIndice + (recorrido < 0 ? 1 : -1));
+    toqueX = null;
+  }, {passive:true});
+}
+
+/* ============================================================
+   PROCESO: foto sticky que cambia según el paso visible
+   ============================================================ */
 const pasos = document.querySelectorAll('.paso');
 const fotosProceso = document.querySelectorAll('#procesoFoto img');
 const fotoNum = document.getElementById('fotoNum');
@@ -138,7 +436,9 @@ const ioPasos = new IntersectionObserver(entradas => {
 }, {rootMargin:'-42% 0px -42% 0px'});
 pasos.forEach(p => ioPasos.observe(p));
 
-/* --- Formulario: validación inline + toast --- */
+/* ============================================================
+   FORMULARIO: validación inline + envío + toast
+   ============================================================ */
 const toast = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
 let toastTimer;
@@ -161,6 +461,7 @@ const privacidad = document.getElementById('privacidad');
 if(privacidad){
   privacidad.addEventListener('change', () => marcarCampo(privacidad, ''));
 }
+
 formulario.addEventListener('submit', e => {
   e.preventDefault();
   const nombre = document.getElementById('nombre');
@@ -172,6 +473,11 @@ formulario.addEventListener('submit', e => {
   if(mensaje.value.trim().length < 10){ marcarCampo(mensaje, 'Cuéntanos un poco más (mín. 10 caracteres).'); ok = false; }
   if(privacidad && !privacidad.checked){ marcarCampo(privacidad, 'Debes aceptar la política de privacidad.'); ok = false; }
   if(!ok) return;
+
+  // Marca de tiempo para el antispam del servidor (enviar.php descarta
+  // los envíos hechos en menos de 2,5 s: eso es un bot, no una persona).
+  document.getElementById('form_inicio').value = Date.now();
+
   // Honeypot (ahora en el navegador): si el campo trampa llega relleno es
   // un bot; fingimos éxito y no hacemos nada. Nadie nota la diferencia.
   if(document.getElementById('web').value.trim() !== ''){
@@ -179,29 +485,30 @@ formulario.addEventListener('submit', e => {
     mostrarToast('¡Mensaje enviado! Te respondemos en 24–48 h.');
     return;
   }
+
   // ------------------------------------------------------------------
   //  ENVÍO DEL FORMULARIO
-  //  ENDPOINT_FORMULARIO: cuando exista un servicio que reciba el
-  //  mensaje (una Pages Function con Email Routing, Formspree, Brevo…),
-  //  basta con pegar aquí su URL. El formulario enviará por POST y el
-  //  visitante no saldrá de la web.
+  //  ENDPOINT_FORMULARIO (arriba del archivo): cuando exista un servicio
+  //  que reciba el mensaje (una Pages Function con Email Routing,
+  //  Formspree, Brevo…), basta con pegar ahí su URL. El formulario
+  //  enviará por POST y el visitante no saldrá de la web.
   //  Mientras esté vacío se usa mailto: — abre el correo del visitante
   //  con el mensaje ya escrito: cero dependencias, pero en un móvil sin
   //  app de correo configurada el mensaje no sale (limitación conocida).
   // ------------------------------------------------------------------
-  const ENDPOINT_FORMULARIO = '';
-  const destino = 'hola@granjapilono.es';
   if (ENDPOINT_FORMULARIO) {
     const boton = formulario.querySelector('button[type="submit"]');
+    const datos = new FormData(formulario);
+    datos.append('form_ajax', '1');   // así enviar.php responde JSON en vez de HTML
     boton.disabled = true;
-    fetch(ENDPOINT_FORMULARIO, { method: 'POST', body: new FormData(formulario) })
+    fetch(ENDPOINT_FORMULARIO, { method: 'POST', body: datos })
       .then(r => { if(!r.ok) throw 0; return r.json().catch(() => ({ok:true})); })
       .then(res => {
         if(res && res.ok === false) throw 0;
         formulario.reset();
         mostrarToast('¡Mensaje enviado! Te respondemos en 24–48 h.');
       })
-      .catch(() => mostrarToast('No se pudo enviar. Escríbenos a ' + destino))
+      .catch(() => mostrarToast('No se pudo enviar. Escríbenos a ' + DESTINO_EMAIL))
       .finally(() => { boton.disabled = false; });
     return;
   }
@@ -209,8 +516,8 @@ formulario.addEventListener('submit', e => {
   const cuerpoMail = encodeURIComponent(
     mensaje.value.trim() + '\n\n— ' + nombre.value.trim() + ' · ' + email.value.trim()
   );
-  mostrarToast('Abriendo tu correo… si no se abre, escríbenos a ' + destino);
-  window.location.href = 'mailto:' + destino + '?subject=' + titulo + '&body=' + cuerpoMail;
+  mostrarToast('Abriendo tu correo… si no se abre, escríbenos a ' + DESTINO_EMAIL);
+  window.location.href = 'mailto:' + DESTINO_EMAIL + '?subject=' + titulo + '&body=' + cuerpoMail;
 });
 
 /* --- Año dinámico --- */
@@ -221,16 +528,24 @@ document.getElementById('anio').textContent = new Date().getFullYear();
    no hay hover, así que mostramos una foto fija para que el producto se vea. --- */
 const movil = matchMedia('(hover:none), (pointer:coarse)').matches;
 if(movil){
-  productos.forEach(prod => {
+  productos.forEach((prod, i) => {
     const src = prod.dataset.img;
     const mini = document.createElement('img');
     mini.className = 'prod-mini';
     mini.src = src;
+    mini.srcset = `${src.replace('.webp', '-600.webp')} 600w, ${src.replace('.webp', '-900.webp')} 900w, ${src} ${flotImgs[i] ? flotImgs[i].width : 1200}w`;
+    mini.sizes = '88vw';
     mini.alt = '';
     mini.loading = 'lazy';
     mini.decoding = 'async';
-    mini.width = 1200; mini.height = 900;
     const cuerpo = prod.querySelector('.prod-inner');
     cuerpo.insertBefore(mini, cuerpo.firstChild);
+  });
+}
+
+/* --- Aplicación instalable: guarda una copia para arrancar sin conexión --- */
+if('serviceWorker' in navigator){
+  addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
   });
 }

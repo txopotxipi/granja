@@ -17,6 +17,7 @@
   --teja:#B04628;
   --teja-clara:#E0A88F;
   --oliva:#6C6A3F;
+  --oliva-clara:#B7B37C;
   --linea:rgba(37,31,23,.16);
   --serif:'Fraunces',Georgia,serif;
   --sans:'Archivo',Helvetica,sans-serif;
@@ -91,10 +92,11 @@ section{padding:clamp(70px,10vw,130px) 0}
 .logo{display:flex;flex-direction:column;line-height:1.1}
 .logo-nombre{font-family:var(--serif);font-weight:600;font-size:1.5rem;letter-spacing:-.01em}
 .logo-sub{font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:var(--tinta-2);margin-top:3px}
-.nav-desk{display:flex;gap:34px}
+.nav-desk{display:flex;gap:clamp(16px,2.3vw,32px)}
 .nav-desk a{font-size:.86rem;font-weight:500;position:relative;padding:4px 0}
 .nav-desk a::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1.5px;background:var(--teja);transform:scaleX(0);transform-origin:right;transition:transform .3s var(--ease)}
-.nav-desk a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-desk a:hover::after,.nav-desk a[aria-current]::after{transform:scaleX(1);transform-origin:left}
+.nav-desk a[aria-current]{color:var(--teja)}
 .header .btn{padding:11px 22px;font-size:.85rem}
 
 /* Botón hamburguesa */
@@ -106,18 +108,21 @@ section{padding:clamp(70px,10vw,130px) 0}
 /* Menú móvil */
 .menu-movil{
   position:fixed;inset:0;z-index:300;background:var(--crema);
-  display:flex;flex-direction:column;justify-content:center;padding:0 8vw;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:96px 8vw 40px;overflow-y:auto;
   clip-path:inset(0 0 100% 0);transition:clip-path .55s var(--ease);
 }
 .menu-movil.abierto{clip-path:inset(0 0 0 0)}
-.menu-movil a{
-  font-family:var(--serif);font-size:clamp(2rem,9vw,3rem);padding:10px 0;
+.menu-movil > a{
+  font-family:var(--serif);font-size:clamp(1.55rem,6.6vw,2.5rem);padding:9px 0;
   border-bottom:1px solid var(--linea);display:flex;justify-content:space-between;align-items:center;
   opacity:0;transform:translateY(18px);transition:.5s var(--ease);
 }
-.menu-movil.abierto a{opacity:1;transform:none}
-.menu-movil a small{font-family:var(--sans);font-size:.75rem;color:var(--teja);font-style:italic}
-.menu-movil-pie{margin-top:36px;font-size:.85rem;color:var(--tinta-2)}
+.menu-movil.abierto > a{opacity:1;transform:none}
+.menu-movil > a small{font-family:var(--sans);font-size:.72rem;color:var(--teja);font-style:italic}
+.menu-movil-pie{margin-top:28px;display:flex;flex-direction:column;gap:5px;font-size:.9rem;color:var(--tinta-2)}
+.menu-movil-pie a{color:var(--tinta);font-weight:500;width:fit-content;border-bottom:1px solid transparent}
+.menu-movil-pie a:hover{border-bottom-color:var(--teja)}
 body.sin-scroll{overflow:hidden}
 
 /* ============================================================
@@ -233,7 +238,11 @@ body.sin-scroll{overflow:hidden}
 .prod.abierto .prod-flecha svg{transform:rotate(90deg)}
 .prod-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s var(--ease)}
 .prod.abierto .prod-body{grid-template-rows:1fr}
-.prod-inner{overflow:hidden}
+/* `visibility` además de recortar: un panel cerrado no debe poder
+   recibir el foco del teclado. El retardo hace que el contenido siga
+   visible durante la animación de cierre y desaparezca al terminar. */
+.prod-inner{overflow:hidden;visibility:hidden;transition:visibility 0s linear .5s}
+.prod.abierto .prod-inner{visibility:visible;transition-delay:0s}
 .prod-inner p{max-width:62ch;color:var(--tinta-2);padding-left:82px}
 .prod-pie{display:flex;align-items:center;gap:26px;flex-wrap:wrap;padding:20px 0 32px 82px}
 .precio{font-family:var(--serif);font-style:italic;font-size:1.15rem;color:var(--teja)}
@@ -284,14 +293,15 @@ body.sin-scroll{overflow:hidden}
    ============================================================ */
 .galeria{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .galeria figure{position:relative;overflow:hidden;border-radius:12px;margin:0;background:var(--crema-2)}
+.g-abrir{display:block;width:100%;height:100%;padding:0;cursor:zoom-in}
 .galeria img{width:100%;height:100%;object-fit:cover;filter:saturate(.92);transition:transform .8s var(--ease)}
-.galeria figure:hover img{transform:scale(1.06)}
+.galeria figure:hover img,.g-abrir:focus-visible img{transform:scale(1.06)}
 .galeria figcaption{
   position:absolute;left:0;bottom:0;background:var(--crema);color:var(--tinta);
   padding:8px 16px;font-size:.66rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;
   transform:translateY(101%);transition:transform .4s var(--ease);
 }
-.galeria figure:hover figcaption{transform:none}
+.galeria figure:hover figcaption,.galeria figure:focus-within figcaption{transform:none}
 .g1{grid-column:1/3;grid-row:1;aspect-ratio:16/9}
 .g2{grid-column:3;grid-row:1/3}
 .g3{grid-column:1;grid-row:2;aspect-ratio:4/3.4}
@@ -354,11 +364,13 @@ body.sin-scroll{overflow:hidden}
 
 /* Toast de confirmación */
 .toast{
-  position:fixed;right:24px;bottom:24px;z-index:1200;
+  position:fixed;right:24px;bottom:96px;z-index:1200;
   background:var(--tinta);color:var(--crema);display:flex;align-items:center;gap:12px;
   padding:16px 22px;border-radius:12px;max-width:min(92vw,380px);
   font-size:.92rem;box-shadow:0 20px 50px rgba(0,0,0,.35);
-  transform:translateY(150%);transition:transform .5s var(--ease);
+  /* Se esconde por debajo del borde inferior: el cálculo incluye el
+     margen inferior, así que vale para cualquier longitud de mensaje. */
+  transform:translateY(calc(100% + 130px));transition:transform .5s var(--ease);
 }
 .toast.ver{transform:none}
 .toast svg{color:var(--teja-clara);flex-shrink:0}
@@ -420,6 +432,213 @@ body.sin-scroll{overflow:hidden}
   /* En móvil la imagen flotante no existe: mostramos foto fija del producto */
   .prod-mini{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;margin:4px 0 16px}
   .prod-inner p,.prod-pie{padding-left:0}
+}
+
+/* ============================================================
+   14. BARRA DE PROGRESO DE LECTURA
+   ============================================================ */
+.progreso{position:fixed;top:0;left:0;height:2px;width:0;z-index:250;background:var(--teja);pointer-events:none}
+
+/* ============================================================
+   15. WHATSAPP FLOTANTE
+   ============================================================ */
+.wa-flotante{
+  position:fixed;right:24px;bottom:24px;z-index:1100;
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--tinta);color:var(--crema);
+  padding:13px 20px;border-radius:999px;
+  font-size:.88rem;font-weight:600;letter-spacing:.02em;
+  box-shadow:0 14px 34px rgba(37,31,23,.28);
+  opacity:0;transform:translateY(140%);pointer-events:none;
+  transition:opacity .45s var(--ease),transform .45s var(--ease),background .25s;
+}
+.wa-flotante.ver{opacity:1;transform:none;pointer-events:auto}
+.wa-flotante:hover{background:var(--teja)}
+.wa-flotante svg{color:var(--teja-clara);flex-shrink:0;transition:color .25s}
+.wa-flotante:hover svg{color:var(--crema)}
+
+/* ============================================================
+   16. VISOR DE FOTOS (galería)
+   ============================================================ */
+.lightbox{
+  position:fixed;inset:0;z-index:1300;
+  background:rgba(24,20,15,.94);backdrop-filter:blur(6px);
+  display:grid;place-items:center;padding:clamp(16px,4vw,56px);
+  opacity:0;transition:opacity .3s var(--ease);
+}
+.lightbox.ver{opacity:1}
+.lightbox[hidden]{display:none}
+.lb-figura{margin:0;max-width:100%;max-height:100%;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lb-figura img{max-width:100%;max-height:76vh;width:auto;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.lb-figura figcaption{color:rgba(242,236,223,.82);font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;text-align:center}
+.lb-btn{
+  position:absolute;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;
+  color:var(--crema);background:rgba(242,236,223,.1);border:1px solid rgba(242,236,223,.28);
+  transition:background .25s,transform .25s var(--ease);
+}
+.lb-btn:hover{background:var(--teja);border-color:var(--teja)}
+.lb-cerrar{top:clamp(14px,3vw,28px);right:clamp(14px,3vw,28px)}
+.lb-prev{left:clamp(10px,3vw,28px);top:50%;transform:translateY(-50%)}
+.lb-next{right:clamp(10px,3vw,28px);top:50%;transform:translateY(-50%)}
+.lb-prev:hover{transform:translateY(-50%) translateX(-3px)}
+.lb-next:hover{transform:translateY(-50%) translateX(3px)}
+.lb-contador{position:absolute;bottom:clamp(14px,3vw,28px);left:50%;transform:translateX(-50%);color:rgba(242,236,223,.7);font-size:.8rem;letter-spacing:.14em;font-variant-numeric:tabular-nums}
+
+/* ============================================================
+   17. CALCULADORA DE PEDIDO
+   ============================================================ */
+.calc-cab{max-width:72ch;margin-bottom:clamp(34px,5vw,54px)}
+.calc-titulo{font-size:clamp(1.9rem,3.6vw,3.1rem);margin-bottom:18px}
+.calc-titulo em{font-style:italic;color:var(--teja)}
+.calc-lead{color:var(--tinta-2);max-width:62ch}
+
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,64px);align-items:start}
+.calc-controles{display:flex;flex-direction:column;gap:clamp(26px,3.5vw,38px)}
+
+.campo-rango{display:flex;flex-direction:column;gap:10px}
+.rango-cab{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.rango-cab label{font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-2)}
+.rango-cab output{font-family:var(--serif);font-size:1.7rem;line-height:1;color:var(--teja);font-variant-numeric:tabular-nums;min-width:2ch;text-align:right}
+.rango-ayuda{font-size:.78rem;color:var(--tinta-2)}
+
+/* Deslizadores: pista fina y pulgar generoso, con los colores de la casa */
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;cursor:pointer}
+input[type="range"]::-webkit-slider-runnable-track{height:3px;background:var(--linea);border-radius:2px}
+input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;margin-top:-10px;
+  background:var(--teja);border:3px solid var(--crema);box-shadow:0 2px 8px rgba(37,31,23,.3);
+  transition:transform .2s var(--ease);
+}
+input[type="range"]:hover::-webkit-slider-thumb{transform:scale(1.12)}
+input[type="range"]::-moz-range-track{height:3px;background:var(--linea);border-radius:2px}
+input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--teja);border:3px solid var(--crema);box-shadow:0 2px 8px rgba(37,31,23,.3)}
+
+.calc-formato{border:none;padding:0;margin:0}
+.calc-formato legend{font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tinta-2);padding:0;margin-bottom:12px}
+.segmentado{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg-item{position:relative;cursor:pointer}
+.seg-item input{position:absolute;opacity:0;width:1px;height:1px}
+.seg-item span{
+  display:flex;flex-direction:column;gap:3px;height:100%;
+  border:1.5px solid var(--linea);border-radius:10px;padding:13px 14px;
+  font-size:.9rem;font-weight:500;
+  transition:border-color .25s,background .25s,color .25s;
+}
+.seg-item span small{font-size:.72rem;font-weight:400;color:var(--tinta-2);font-variant-numeric:tabular-nums}
+.seg-item input:checked + span{background:var(--tinta);border-color:var(--tinta);color:var(--crema)}
+.seg-item input:checked + span small{color:var(--teja-clara)}
+.seg-item input:focus-visible + span{outline:2px solid var(--teja);outline-offset:3px}
+.seg-item:hover span{border-color:var(--tinta)}
+
+.calc-resultado{background:var(--tinta);color:var(--crema);border-radius:18px;padding:clamp(26px,3.4vw,40px)}
+.calc-etiqueta{font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:rgba(242,236,223,.6)}
+.calc-cifra{font-family:var(--serif);font-size:clamp(3.2rem,6vw,4.6rem);line-height:1;margin:12px 0 26px;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:10px}
+.calc-cifra small{font-family:var(--sans);font-size:.85rem;font-weight:400;letter-spacing:.06em;color:rgba(242,236,223,.65)}
+.calc-datos{display:flex;flex-direction:column;border-top:1px solid rgba(242,236,223,.18)}
+.calc-datos > div{display:flex;justify-content:space-between;gap:18px;align-items:baseline;padding:11px 0;border-bottom:1px solid rgba(242,236,223,.12)}
+.calc-datos dt{font-size:.82rem;color:rgba(242,236,223,.7)}
+.calc-datos dd{font-size:.95rem;font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.calc-datos .destacado dt{color:var(--oliva-clara)}
+.calc-datos .destacado dd{font-family:var(--serif);font-size:1.5rem;color:var(--oliva-clara)}
+.calc-nota{font-size:.82rem;line-height:1.55;color:rgba(242,236,223,.75);margin-top:18px;min-height:2.6em}
+.calc-ctas{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-top:22px}
+.calc-ctas .btn{background:var(--teja)}
+.calc-ctas .btn:hover{background:#a83e20;box-shadow:4px 4px 0 var(--crema)}
+.calc-ctas .link-sub{border-bottom-color:var(--teja-clara);color:var(--crema)}
+.calc-ctas .link-sub:hover{color:var(--teja-clara)}
+.calc-legal{font-size:.72rem;line-height:1.5;color:rgba(242,236,223,.5);margin-top:20px}
+
+/* ============================================================
+   18. RESERVA DE VISITA
+   ============================================================ */
+.reserva{
+  margin-top:clamp(50px,7vw,90px);
+  display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,5vw,64px);
+  background:var(--tinta);color:var(--crema);
+  border-radius:20px;padding:clamp(30px,4.4vw,56px);
+}
+.reserva-etiqueta{display:inline-flex;align-items:center;gap:9px;font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--oliva-clara)}
+.reserva-etiqueta::before{content:"";width:26px;height:1px;background:var(--oliva-clara)}
+.reserva-titulo{font-size:clamp(1.6rem,3vw,2.4rem);margin:16px 0}
+.reserva-texto{color:rgba(242,236,223,.75);max-width:52ch;margin-bottom:26px}
+.reserva-puntos{display:flex;flex-direction:column;gap:10px}
+.reserva-puntos li{position:relative;padding-left:24px;font-size:.9rem;color:rgba(242,236,223,.85)}
+.reserva-puntos li::before{content:"";position:absolute;left:0;top:.55em;width:9px;height:9px;border-radius:50%;background:var(--oliva-clara)}
+.reserva-form{display:flex;flex-direction:column;gap:22px}
+.reserva-form .campo{margin-bottom:0}
+.reserva-form .campo label{color:rgba(242,236,223,.65)}
+.reserva-form .campo input,.reserva-form .campo select{border-bottom-color:rgba(242,236,223,.35);color:var(--crema)}
+.reserva-form .campo select{
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23F2ECDF' stroke-width='1.5'/%3E%3C/svg%3E") right center no-repeat;
+}
+.reserva-form .campo select option{color:var(--tinta);background:var(--crema)}
+.reserva-form .campo input:focus,.reserva-form .campo select:focus{border-color:var(--teja-clara)}
+.reserva-form .btn{align-self:flex-start;background:var(--teja)}
+.reserva-form .btn:hover{box-shadow:4px 4px 0 var(--crema)}
+.reserva-nota{font-size:.78rem;color:rgba(242,236,223,.6)}
+.reserva-nota a{color:var(--teja-clara);text-decoration:underline;text-underline-offset:3px}
+
+/* ============================================================
+   19. PREGUNTAS FRECUENTES
+   ============================================================ */
+.faq-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(30px,5vw,70px);align-items:start}
+.faq-titulo{font-size:clamp(1.9rem,3.6vw,3rem);margin-bottom:18px}
+.faq-titulo em{font-style:italic;color:var(--teja)}
+.faq-lead{color:var(--tinta-2);max-width:42ch;margin-bottom:26px}
+.faq-lista{border-top:1px solid var(--tinta)}
+.faq-item{border-bottom:1px solid var(--linea)}
+.faq-item summary{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:22px 0;cursor:pointer;list-style:none;
+  font-family:var(--serif);font-weight:500;font-size:clamp(1.05rem,1.7vw,1.3rem);
+  transition:color .25s,padding-left .3s var(--ease);
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary:hover{color:var(--teja);padding-left:6px}
+.faq-item summary::after{
+  content:"";flex-shrink:0;width:27px;height:27px;border-radius:50%;
+  border:1.5px solid var(--linea);
+  background-image:linear-gradient(var(--tinta),var(--tinta)),linear-gradient(var(--tinta),var(--tinta));
+  background-position:center,center;background-size:11px 1.5px,1.5px 11px;background-repeat:no-repeat;
+  transition:background-color .3s var(--ease),border-color .3s var(--ease),transform .3s var(--ease);
+}
+.faq-item summary:hover::after{border-color:var(--tinta);transform:scale(1.06)}
+/* Abierto: el círculo se rellena y la barra vertical desaparece (queda un menos) */
+.faq-item[open] summary{color:var(--teja)}
+.faq-item[open] summary::after{
+  background-color:var(--oliva);border-color:var(--oliva);
+  background-image:linear-gradient(var(--crema),var(--crema)),linear-gradient(transparent,transparent);
+}
+.faq-respuesta{padding:0 0 24px}
+.faq-respuesta p{color:var(--tinta-2);max-width:70ch}
+.faq-respuesta a{color:var(--teja);text-decoration:underline;text-underline-offset:3px}
+@keyframes faqAbre{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.faq-item[open] .faq-respuesta{animation:faqAbre .35s var(--ease)}
+
+/* ============================================================
+   20. AVISOS Y ENLACES DE CONTACTO
+   ============================================================ */
+.form-noscript{background:var(--crema-2);border-left:3px solid var(--teja);padding:14px 18px;border-radius:0 8px 8px 0;margin-bottom:26px;font-size:.88rem;line-height:1.55}
+.form-noscript a{color:var(--teja);text-decoration:underline;text-underline-offset:3px}
+.contacto-datos a{border-bottom:1px solid var(--linea);transition:border-color .2s,color .2s}
+.contacto-datos a:hover{color:var(--teja);border-bottom-color:var(--teja)}
+
+/* ============================================================
+   21. RESPONSIVE DE LOS COMPONENTES NUEVOS
+   ============================================================ */
+@media (max-width:1024px){
+  .calc-grid,.faq-grid{grid-template-columns:1fr;gap:44px}
+  .reserva{grid-template-columns:1fr;gap:36px}
+  .faq-lead{max-width:56ch}
+}
+@media (max-width:560px){
+  .segmentado{grid-template-columns:1fr}
+  .calc-cifra{font-size:clamp(2.8rem,14vw,3.6rem)}
+  .reserva-form .btn{align-self:stretch;justify-content:center}
+  .lb-figura img{max-height:60vh}
+  .wa-flotante{width:54px;height:54px;padding:0;border-radius:50%;justify-content:center;right:14px;bottom:14px}
+  .wa-flotante span{display:none}
+  .toast{bottom:82px}
 }
 
 /* Menos movimiento (accesibilidad) */

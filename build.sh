@@ -11,6 +11,7 @@
 set -e
 rm -rf dist
 mkdir -p dist
-cp -R index.html legal.html assets robots.txt sitemap.xml _headers 404.html .assetsignore dist/
+cp -R index.html legal.html assets robots.txt sitemap.xml _headers 404.html .assetsignore \
+      manifest.webmanifest sw.js dist/
 echo "dist/ listo:"
 find dist -type f | sort
