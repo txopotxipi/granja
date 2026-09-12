@@ -28,8 +28,10 @@ when confirmed project facts change.
 - `build.sh` — build de Pages: copia solo lo público a `dist/` (en el panel: build command `sh build.sh`, output directory `dist`).
 - `.htaccess` — HTTPS sin www, caché alineada con `_headers`, compresión, tipos MIME (`webmanifest`, `woff2`), cabeceras de seguridad y bloqueo 404 de `.git/`, `.agents/`, `*.md` y `*.py`.
 - `tmp-log/.htaccess` — acceso HTTP denegado (Apache 2.2 y 2.4); el resto de `tmp-log/` está en `.gitignore`.
-- `sitemap.xml` — solo la home, con dominio placeholder.
+- `sitemap.xml` — solo la home. `legal.html` y `404.html` quedan fuera a propósito: llevan `noindex` y declararlas en el sitemap sería un error en Search Console.
 - `robots.txt` — indexación permitida + declaración del sitemap.
+- `1333325af64a5be5f5dfc84353b1dac9.txt` — clave de IndexNow. Tiene que estar en la raíz del sitio (build.sh la copia a `dist/`) para que Bing verifique la propiedad antes de aceptar avisos de indexación. Si se rota, actualizar también `indexnow.sh`.
+- `indexnow.sh` — avisa a IndexNow (Bing, Yandex, Seznam, Naver) de que el sitio cambió. Google no usa este protocolo.
 - `assets/css/style.css` · `assets/js/main.js` · `assets/img/` (14 fotos × 3 tamaños + 4 iconos + `og-granja.jpg` 1200×630) · `assets/fonts/` (3 WOFF2 variables).
 
 ## Commands
@@ -57,6 +59,9 @@ when confirmed project facts change.
 - El testimonio del `index.html` es de relleno hasta tener uno real.
 - Favicon, `og:image` (existe, 1200×630), `canonical` y `twitter:card` ya están puestos; el dominio es el placeholder `https://granja.pages.dev/` hasta conocer el real (editar el `<head>` de `index.html`, `sitemap.xml` y la línea `Sitemap:` de `robots.txt`).
 - Las coordenadas GPS del JSON-LD son orientativas (Villa de Cruces) y hay que confirmarlas.
+- **El sitio todavía no está dado de alta en ningún buscador.** La parte técnica está lista (`robots.txt`, `sitemap.xml`, `meta robots` con `max-image-preview:large`, JSON-LD local e IndexNow), pero el alta es manual: Google Search Console, Bing Webmaster Tools y la ficha de Google Business Profile. Los pasos están en el README, sección «Aparecer en Google y Microsoft».
+- **La ficha de Google Maps está bloqueada** hasta que existan teléfono y dirección reales. Google rechaza o suspende las fichas con datos que no puede verificar, y una ficha suspendida es difícil de recuperar.
+- El sitio vive en un subdominio `pages.dev` propiedad de Cloudflare, no del negocio. Si algún día se compra un dominio propio habrá que rehacer el alta en los buscadores y añadir redirecciones desde las URLs antiguas.
 - Los enlaces de redes sociales del footer apuntan a `#`.
 - `.htaccess` y `tmp-log/.htaccess` solo aplican en hosting Apache; en Cloudflare Pages (producción actual) no se leen. Al subir por FTP a un Apache, activar "mostrar archivos ocultos" para que los `.htaccess` se copien.
 - El formulario en Pages envía vía `mailto:` (decisión del usuario, 0 dependencias): funciona sin servidor, pero abre el correo del visitante. Migrar a Cloudflare Email Routing cuando exista dominio propio (gratis, sin terceros) o a una Pages Function con Resend.
