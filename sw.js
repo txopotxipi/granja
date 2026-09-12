@@ -8,7 +8,7 @@
    hash, así que la versión es lo que fuerza la renovación de caché.
    ============================================================ */
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'granja-pilono-' + VERSION;
 
 /* Copia base: lo mínimo para que la web abra sin conexión */

@@ -641,6 +641,27 @@ input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;b
   .toast{bottom:82px}
 }
 
+/* ============================================================
+   22. ZONA DE REPARTO
+   Nombra los pueblos a los que se reparte: es lo que hace que la
+   web aparezca en búsquedas del tipo «carne de cerdo en Lalín».
+   ============================================================ */
+.zona-intro{max-width:62ch;color:var(--tinta-2);font-size:1.02rem;line-height:1.75;margin-bottom:clamp(30px,4vw,46px)}
+.zona-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(20px,3vw,34px);margin-bottom:clamp(30px,4vw,46px)}
+.zona-bloque{border-top:1px solid var(--linea);padding-top:16px}
+.zona-bloque h3{font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--teja);margin-bottom:10px}
+.zona-bloque p{font-size:.92rem;line-height:1.75;color:var(--tinta-2)}
+.zona-nota{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,34px);border-top:1px solid var(--tinta);padding-top:22px}
+.zona-nota p{font-size:.95rem;line-height:1.75;color:var(--tinta-2)}
+.zona-nota strong{color:var(--tinta);font-weight:600}
+
+@media (max-width:1024px){
+  .zona-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .zona-grid,.zona-nota{grid-template-columns:1fr}
+}
+
 /* Menos movimiento (accesibilidad) */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}

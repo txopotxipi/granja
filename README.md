@@ -288,6 +288,7 @@ correcta es: datos reales → publicar → dar de alta en los buscadores → fic
 | Testimonio real o eliminarlo (el actual es de relleno) | `index.html`, sección `<section class="cita">` |
 | Fotos reales de la granja | Sobreescribe los `.webp` de `assets/img/` **y genera sus variantes** (ver abajo) |
 | Coordenadas GPS para el SEO local | `index.html`, bloque JSON-LD (`"geo"`): hoy son orientativas |
+| **Lista de pueblos de la zona de reparto** (la propuse yo, sin confirmar) | `index.html`, sección `#zona`: contrastar con el radio real de reparto (150 km) y quitar o añadir los que haga falta |
 
 **Al cambiar una foto, genera sus tres tamaños.** Sustituye `nombre.webp` y crea
 `nombre-900.webp` y `nombre-600.webp` a partir de ella. Si no lo haces, el
