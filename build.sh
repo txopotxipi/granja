@@ -16,15 +16,26 @@ set -e
 # indexnow.sh.
 INDEXNOW_KEY="1333325af64a5be5f5dfc84353b1dac9"
 
-# Archivo de verificación de Google Search Console. Google exige que se sirva
-# en la raíz del sitio con este nombre EXACTO: si se renombra, la verificación
-# falla. Si algún día se regenera, el nombre cambia: actualizar esta variable
-# y borrar el archivo antiguo del repositorio.
-GOOGLE_VERIFICACION="google55690119d3470c17.html"
+# Archivos de verificación de propiedad de los buscadores. Tienen que servirse
+# en la raíz con el nombre EXACTO que da cada buscador, y ese nombre cambia cada
+# vez que se regenera la verificación. Por eso no se listan uno a uno: se copian
+# por patrón y, si alguno no existe, se ignora sin romper el build.
+#   google*.html       -> Google Search Console (método «Archivo HTML»)
+#   BingSiteAuth.xml   -> Microsoft Bing Webmaster Tools (método «XML File»)
+# Cuidado con el `for`: el `if` es necesario. Un `[ -e "$f" ] && cp ...` a secas
+# devuelve no-cero cuando el archivo no existe y, con `set -e`, mataría el build.
+VERIFICACIONES="google*.html BingSiteAuth.xml"
 
 rm -rf dist
 mkdir -p dist
 cp -R index.html legal.html assets robots.txt sitemap.xml _headers 404.html .assetsignore \
-      manifest.webmanifest sw.js "$INDEXNOW_KEY.txt" "$GOOGLE_VERIFICACION" dist/
+      manifest.webmanifest sw.js "$INDEXNOW_KEY.txt" dist/
+
+for f in $VERIFICACIONES; do
+  if [ -e "$f" ]; then
+    cp "$f" dist/
+    echo "verificación copiada: $f"
+  fi
+done
 echo "dist/ listo:"
 find dist -type f | sort

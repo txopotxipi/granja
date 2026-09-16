@@ -234,11 +234,22 @@ que, cuando llegue, lo entienda bien. Esa parte ya está hecha.
 ### Paso 2 — Microsoft Bing Webmaster Tools
 
 1. Entra en <https://www.bing.com/webmasters> con una cuenta Microsoft.
-2. **Lo más fácil: importar desde Google Search Console.** Hay un botón para ello y te
-   trae el sitio ya verificado, sin repetir el proceso.
-3. Si prefieres hacerlo aparte: **Añadir sitio** → `https://granja.pages.dev/` →
-   verificar (mismos métodos que Google) → enviar `sitemap.xml`.
-4. Bing alimenta también a **Copilot** y a los resultados de Windows. Merece la pena.
+2. **Lo más fácil: importar desde Google Search Console.** Bing pide permiso para leer
+   tu cuenta de Search Console, te lista los sitios ya verificados y, al pulsar
+   Importar, **el sitio queda verificado automáticamente**: sin archivos ni etiquetas.
+   Y a partir de ahí Bing **revisa tu Search Console de forma periódica y se trae solo
+   los sitemaps nuevos**. Es la opción recomendada.
+3. Si prefieres verificarlo a mano, Bing ofrece cuatro métodos. Dos no nos sirven
+   (`pages.dev` es de Cloudflare y no controlas su DNS: quedan descartados el CNAME y
+   la verificación automática por DNS). Los otros dos sí:
+   - **XML File** (el más limpio aquí): descarga `BingSiteAuth.xml` y déjalo en la raíz
+     del proyecto. `build.sh` ya lo copia a `dist/` por patrón, no hay que tocar nada
+     más. Ventaja: las rutas `.xml` **no** pasan por la redirección de Cloudflare
+     (comprobado: `sitemap.xml` responde 200 en su URL literal).
+   - **Meta tag**: pega el `<meta name="msvalidate.01" content="…">` al final del
+     `<head>` de `index.html`.
+4. Bing tarda **hasta 48 h** en mostrar datos de analítica. A cambio alimenta también a
+   **Copilot** y a los resultados de Windows, así que merece la pena.
 
 ### Paso 3 — Avisar de los cambios (IndexNow)
 
