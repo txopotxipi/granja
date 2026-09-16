@@ -204,6 +204,7 @@ que, cuando llegue, lo entienda bien. Esa parte ya está hecha.
 | JSON-LD `Farm` + `LocalBusiness` | Dirección, coordenadas, horarios, teléfono y ofertas. Es lo que alimenta el panel de negocio local |
 | JSON-LD `FAQPage` | Permite que las 8 preguntas salgan desplegables en los resultados |
 | `{clave}.txt` + `indexnow.sh` | Avisa a Microsoft Bing (y Yandex, Seznam, Naver) en minutos, sin esperar semanas |
+| `google-site-verification` (meta y archivo) | Demuestran a Search Console que el sitio es tuyo. Los dos métodos, por si acaso |
 | `404.html` con `noindex` | Evita que una página de error acabe en los resultados |
 
 ### Paso 1 — Google Search Console
@@ -214,10 +215,18 @@ que, cuando llegue, lo entienda bien. Esa parte ya está hecha.
    métodos de DNS no sirven. Usa uno de estos dos:
    - **Etiqueta HTML** (lo más rápido): copia el `<meta name="google-site-verification" …>`
      que te da y pásamelo. Lo pongo en el `<head>` de `index.html` y se publica solo.
-   - **Archivo HTML** (el elegido): `google55690119d3470c17.html` ya está en la raíz y
-     copiado a `dist/` por `build.sh`. Ojo: Google exige que se sirva con ese nombre
-     **exacto**. Si algún día se regenera, el nombre cambia → actualizar la variable
-     `GOOGLE_VERIFICACION` de `build.sh` y borrar el archivo antiguo del repositorio.
+   - **Archivo HTML**: `google55690119d3470c17.html` está en la raíz y `build.sh` lo
+     copia a `dist/` mediante la variable `GOOGLE_VERIFICACION`. Google exige el nombre
+     **exacto**. Si se regenera, el nombre cambia → actualizar esa variable y borrar el
+     archivo antiguo del repositorio.
+
+> **Los dos métodos están activos a la vez, y es a propósito.** El token es el mismo
+> (`google55690119d3470c17`), así que da igual cuál elija Txopo en Search Console.
+> El motivo de duplicarlo: **Cloudflare Pages responde 308 en todas las rutas
+> `*.html`** (redirige `/x.html` → `/x`, comprobado también en `legal.html` e
+> `index.html`). El archivo se sirve con el contenido correcto en la URL sin
+> extensión, y Google sigue redirecciones, pero no vale la pena que la verificación
+> dependa de eso: con la etiqueta del `<head>` no hay redirección de por medio.
 4. Ya verificado, entra en **Sitemaps** y envía `sitemap.xml`.
 5. Opcional: en **Inspección de URL**, pega `https://granja.pages.dev/` y pulsa
    «Solicitar indexación». Acelera la primera visita.

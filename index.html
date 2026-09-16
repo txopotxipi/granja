@@ -12,6 +12,17 @@
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1">
 
+<!-- Verificación de propiedad en Google Search Console.
+     Hay DOS métodos activos a la vez, a propósito:
+       1. Este meta (método "Etiqueta HTML").
+       2. El archivo google55690119d3470c17.html de la raíz (método "Archivo HTML").
+     El token es el mismo en ambos. Se dejan los dos porque Cloudflare Pages
+     responde 308 en las rutas *.html (redirige /x.html -> /x), y no queremos
+     que la verificación dependa de que Google siga esa redirección.
+     Si algún día se cambia de cuenta o se rehace la propiedad, hay que
+     sustituir el token aquí y en build.sh (variable GOOGLE_VERIFICACION). -->
+<meta name="google-site-verification" content="google55690119d3470c17">
+
 <meta property="og:title" content="Granja Piloño — Granja de cerdos en Galicia">
 <meta property="og:description" content="Establos amplios, alimentación de primera y bienestar animal certificado en Piloño (Pontevedra). Del corral a tu mesa, sin atajos.">
 <meta property="og:type" content="website">
