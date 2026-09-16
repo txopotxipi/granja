@@ -2,10 +2,16 @@
 <!-- Solo se listan páginas indexables. legal.html queda fuera a propósito:
      lleva <meta name="robots" content="noindex, follow">, y declarar en el
      sitemap una URL marcada como noindex hace que Search Console la señale
-     como error. 404.html tampoco va, por la misma razón. -->
+     como error. 404.html tampoco va, por la misma razón.
+
+     `lastmod` es la fecha del último cambio real de contenido de la página.
+     Hay que actualizarla al publicar cambios: Google la usa para decidir si
+     merece la pena volver a rastrear. Ojo: si se pone una fecha falsa (o se
+     actualiza en cada despliegue sin que cambie nada), Google acaba
+     ignorando el campo. -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://granja.pages.dev/</loc>
-    <lastmod>2026-09-12</lastmod>
+    <lastmod>2026-09-16</lastmod>
   </url>
 </urlset>
