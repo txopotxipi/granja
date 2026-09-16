@@ -23,8 +23,11 @@ if [ $# -gt 0 ]; then
   URLS="$*"
   TOTAL=$#
 else
-  URLS="https://$HOST/ https://$HOST/legal.html"
-  TOTAL=2
+  # Solo páginas indexables: legal.html lleva "noindex", así que avisar de
+  # ella a los buscadores es contraproducente (se rastrearía para nada).
+  # La lista debe coincidir con la de sitemap.xml.
+  URLS="https://$HOST/"
+  TOTAL=1
 fi
 
 # Construye el array JSON de URLs
@@ -39,10 +42,19 @@ BODY="{\"host\":\"$HOST\",\"key\":\"$KEY\",\"keyLocation\":\"https://$HOST/$KEY.
 echo "Avisando a IndexNow de $TOTAL URL(s)..."
 echo ""
 
-CODIGO=$(curl -s -o /dev/null -w "%{http_code}" \
+# La respuesta se captura por sustitución de comandos, no con "-o /dev/null":
+# el curl de Windows (C:\Windows\System32\curl.exe) no entiende /dev/null y
+# aborta con "exit 23 (Failed writing body)". Con "set -e" el script moría
+# justo aquí, sin imprimir nunca el resultado.
+RESPUESTA=$(curl -s -w '\n%{http_code}' \
   -X POST "https://api.indexnow.org/indexnow" \
   -H "Content-Type: application/json; charset=utf-8" \
-  -d "$BODY")
+  -d "$BODY") || {
+    echo "Error: no se pudo contactar con api.indexnow.org (¿sin conexión?)."
+    exit 1
+  }
+
+CODIGO=$(printf '%s' "$RESPUESTA" | tail -n 1)
 
 echo "Respuesta HTTP: $CODIGO"
 case "$CODIGO" in

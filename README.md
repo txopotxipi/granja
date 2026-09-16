@@ -214,8 +214,10 @@ que, cuando llegue, lo entienda bien. Esa parte ya está hecha.
    métodos de DNS no sirven. Usa uno de estos dos:
    - **Etiqueta HTML** (lo más rápido): copia el `<meta name="google-site-verification" …>`
      que te da y pásamelo. Lo pongo en el `<head>` de `index.html` y se publica solo.
-   - **Archivo HTML**: descarga el `.html` que te dan, déjalo en la raíz del proyecto y
-     avísame para añadirlo a `build.sh`.
+   - **Archivo HTML** (el elegido): `google55690119d3470c17.html` ya está en la raíz y
+     copiado a `dist/` por `build.sh`. Ojo: Google exige que se sirva con ese nombre
+     **exacto**. Si algún día se regenera, el nombre cambia → actualizar la variable
+     `GOOGLE_VERIFICACION` de `build.sh` y borrar el archivo antiguo del repositorio.
 4. Ya verificado, entra en **Sitemaps** y envía `sitemap.xml`.
 5. Opcional: en **Inspección de URL**, pega `https://granja.pages.dev/` y pulsa
    «Solicitar indexación». Acelera la primera visita.
@@ -239,6 +241,29 @@ sh indexnow.sh
 
 Google **no usa IndexNow**. Para Google, el aviso se da en Search Console con
 «Solicitar indexación», o simplemente esperando a que vuelva a rastrear.
+
+> **Aviso sobre `indexnow.sh` (corregido el 2026-09-16).** El script usaba
+> `curl -o /dev/null`, y el `curl` de Windows (`C:\Windows\System32\curl.exe`) no
+> entiende `/dev/null`: devolvía *exit 23 (Failed writing body)*. Como el script lleva
+> `set -e`, moría en esa línea y **nunca imprimía el resultado**. La petición sí llegaba
+> al servidor, pero no había forma de saberlo. Ahora la respuesta se captura por
+> sustitución de comandos, así que funciona igual en Windows y en Linux. Si algún día
+> añades llamadas a `curl` en otros scripts, evita `/dev/null` por el mismo motivo.
+
+### Comprobar si ya apareces (o no)
+
+Esto no se puede automatizar: Google y Bing bloquean las consultas hechas por
+programas. Hay que mirarlo **a mano en el navegador**:
+
+| Buscador | Qué escribir | Si sale «no obtuvo ningún resultado» |
+|---|---|---|
+| Google | `site:granja.pages.dev` en <https://www.google.com> | Todavía no está indexado |
+| Bing | `site:granja.pages.dev` en <https://www.bing.com> | Todavía no está indexado |
+| Bing (alternativa) | `site:granja.pages.dev` en <https://duckduckgo.com> | DuckDuckGo usa el índice de Bing, así que sirve de atajo |
+
+Truco: si `site:granja.pages.dev` no devuelve nada pero `site:pages.dev` sí, el
+buscador conoce el dominio pero aún no tu página. Y si buscas `Granja Piloño` y sales,
+estás indexado aunque el `site:` tarde en reflejarlo.
 
 ### Paso 4 — Ficha de Google (Google Maps) ← lo que más visitas trae
 
