@@ -1,8 +1,15 @@
 # ============================================================
 #  Granja Piloño — cabeceras para Cloudflare Pages (_headers)
 #  Equivalente web del .htaccess (Pages no lee .htaccess).
-#  Si dos reglas tocan la misma cabecera, la última manda:
-#  por eso las fuentes van AL FINAL, para imponer su caché.
+#
+#  OJO (verificado en producción el 2026-09-20): Cloudflare Pages
+#  CONCATENA las cabeceras de TODAS las reglas que coinciden, no hace que
+#  "gane la última". Con una regla general /assets/* las fuentes salían así:
+#    Cache-Control: public, max-age=604800, public, max-age=31536000, immutable
+#  Por eso aquí las reglas de caché NO se solapan nunca: cada carpeta tiene
+#  la suya. Si algún día se añade una carpeta bajo /assets/ (p. ej.
+#  /assets/video/), hay que darle su propia regla — nunca cubrirla con una
+#  regla general que además alcance a /assets/fonts/.
 # ============================================================
 
 /*
@@ -14,10 +21,18 @@
 # CSS, JS e imágenes: una semana. Los nombres de archivo no llevan
 # versión, así que una caché más larga haría que los visitantes
 # viesen la web antigua después de cada publicación.
-/assets/*
+/assets/css/*
   Cache-Control: public, max-age=604800
 
-# Fuentes: un año, inmutable. Nunca cambian de contenido.
+/assets/js/*
+  Cache-Control: public, max-age=604800
+
+/assets/img/*
+  Cache-Control: public, max-age=604800
+
+# Fuentes: un año, inmutable. Nunca cambian de contenido. Esta regla no
+# se solapa con ninguna otra (de ahí las tres reglas de arriba en vez de
+# una sola para todo /assets/): así la cabecera sale una única vez.
 /assets/fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
