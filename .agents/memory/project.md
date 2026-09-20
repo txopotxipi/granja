@@ -13,17 +13,17 @@ when confirmed project facts change.
 - **Hosting real: Cloudflare Pages** (`https://granja.pages.dev`), conectado al repo GitHub (`txopotxipi/granja`). Es hosting estático: no ejecuta PHP ni lee `.htaccess`; sirve `enviar.php` como texto plano y cualquier ruta inexistente como 200 + index.html (soft-404, hasta añadir `404.html`). HTTPS, brotli, `nosniff` y `referrer-policy` los pone Cloudflare de serie; caché fina y resto de cabeceras requieren `_headers`, y los bloqueos de archivos internos se resuelven no publicándolos (build command a `dist/`). El `.htaccess` queda como preparación por si se migra a hosting Apache.
 - Fuentes: Fraunces y Archivo **autohospedadas** en `assets/fonts/` (WOFF2 variable, subset latin, ~180 KB; `@font-face` al inicio de `style.css`) y **precargadas** desde el `<head>`.
 - Imágenes: cada foto en tres tamaños (`nombre.webp` 1200 px, `nombre-900.webp`, `nombre-600.webp`) servidas con `srcset`/`sizes`. Al sustituir una foto hay que regenerar sus variantes.
-- Agent layer: SlashStack (instalado también en la raíz del workspace `D:\granja`).
+- Agent layer: SlashStack (instalado también en la raíz del workspace `D:\granja`). Las carpetas de estado local de los asistentes (`.workbuddy-ai/`, `.freebuff/`) están ignoradas por git y excluidas del despliegue en `.assetsignore`.
 - Git: repositorio propio con rama `main` y remoto `origin`.
 
 ## Estructura
 
-- `index.html` — single page con 7 secciones numeradas: hero, filosofía (01), productos (02), calculadora (03), proceso (04), finca + reserva (05), FAQ (06), contacto (07); más marquee, cifras, cita y footer.
+- `index.html` — single page con 8 secciones numeradas (`sec-num`): hero, filosofía (01), productos (02), calculadora (03), proceso (04), finca + galería y reserva (05), zona de reparto (06), FAQ (07), contacto (08); más marquee, cifras, cita y footer. El menú de escritorio enlaza 6 de ellas (proceso y contacto no están en `#navDesk`); el menú móvil, las 8.
 - `legal.html` — aviso legal, privacidad (RGPD) y cookies.
 - `manifest.webmanifest` — PWA: nombre, iconos (192/512/maskable) y 3 atajos.
 - `sw.js` — service worker (constante `VERSION` a subir en cada publicación).
 - `enviar.php` — variante PHP del formulario para hosting Apache (validación server-side + honeypot + rate-limit por IP real + guarda de velocidad + UTF-8). Responde JSON si llega `form_ajax=1` (fetch) y una página HTML de cortesía si no (envío sin JavaScript). NO se publica en Pages (build.sh lo excluye).
-- `_headers` — seguridad (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) y caché para Cloudflare Pages (assets 7 días, fuentes 1 año immutable, HTML revalidado, sw.js sin caché).
+- `_headers` — seguridad (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy) y caché para Cloudflare Pages (CSS/JS/imágenes 7 días, fuentes 1 año immutable, HTML revalidado, sw.js sin caché). **Las reglas de caché no se solapan**: Pages CONCATENA las cabeceras de todas las reglas que coinciden (no gana la última, comprobado en producción el 2026-09-20), así que hay una regla por carpeta (`/assets/css/*`, `/assets/js/*`, `/assets/img/*`, `/assets/fonts/*`).
 - `404.html` — 404 real autocontenida con `noindex`; elimina el soft-404 de Pages.
 - `build.sh` — build de Pages: copia solo lo público a `dist/` (en el panel: build command `sh build.sh`, output directory `dist`).
 - `.htaccess` — HTTPS sin www, caché alineada con `_headers`, compresión, tipos MIME (`webmanifest`, `woff2`), cabeceras de seguridad y bloqueo 404 de `.git/`, `.agents/`, `*.md` y `*.py`.
@@ -49,7 +49,8 @@ when confirmed project facts change.
 - Patrones JS: `IntersectionObserver` para reveals, contadores y pasos del proceso; un único listener de scroll con `requestAnimationFrame` para barra de progreso, botón de WhatsApp y scrollspy.
 - Acordeón de productos: los ids (`prod-cab-N`, `prod-body-N`) y el ARIA (`aria-controls`, `role="region"`, `aria-labelledby`) se generan desde `main.js` — no duplicarlos en el HTML. Los paneles cerrados se ocultan con `visibility:hidden` (no solo `0fr`) para que no reciban foco.
 - FAQ con `<details>`/`<summary>` nativos; el JS solo cierra las demás al abrir una. Las respuestas están duplicadas en el JSON-LD `FAQPage`: si cambia una, cambiar la otra.
-- Ajustes centralizados al inicio de `main.js`: `WHATSAPP`, `DESTINO_EMAIL`, `ENDPOINT_FORMULARIO`; y en la calculadora: `PRECIO`, `PESO`, `NOMBRE`, `RACION`.
+- Ajustes centralizados al inicio de `main.js`: `WHATSAPP`, `DESTINO_EMAIL`, `ENDPOINT_FORMULARIO`; y en la calculadora: `PRECIO`, `PESO`, `NOMBRE`, `RACION` (los precios de las etiquetas del selector los escribe el JS desde `PRECIO`; en el HTML quedan como texto de partida para el modo sin JavaScript).
+- Calculadora: el coste de un formato se calcula SIEMPRE con `costeDe(formato, consumo)`, que cuenta las piezas completas que hacen falta (`Math.ceil(consumo / peso)`). Cálculos como `PESO[formato] * PRECIO[formato]` (una sola pieza) dan un coste y un ahorro falsos cuando el consumo no cabe en una pieza. El formato recomendado es el más barato de verdad a ese consumo, no el de mejor precio por kilo en la etiqueta. Los mensajes que salen de la web (WhatsApp y formulario) usan `pedidoEnTexto()` para decir cuántas piezas hay que comprar.
 - Accesibilidad: `aria-live` en errores de formulario, `:focus-visible`, `alt` en todas las imágenes, foco encerrado en el visor de fotos.
 
 ## Riesgos y restricciones duraderas
@@ -66,6 +67,7 @@ when confirmed project facts change.
 - Los enlaces de redes sociales del footer apuntan a `#`.
 - `.htaccess` y `tmp-log/.htaccess` solo aplican en hosting Apache; en Cloudflare Pages (producción actual) no se leen. Al subir por FTP a un Apache, activar "mostrar archivos ocultos" para que los `.htaccess` se copien.
 - El formulario en Pages envía vía `mailto:` (decisión del usuario, 0 dependencias): funciona sin servidor, pero abre el correo del visitante. Migrar a Cloudflare Email Routing cuando exista dominio propio (gratis, sin terceros) o a una Pages Function con Resend.
+- **Antispam de velocidad (`form_inicio`)**: la marca de tiempo se pone al CARGAR la página (y se refresca en `pageshow` y tras cada envío), nunca en el `submit`. Si se vuelve a mover al `submit`, la diferencia es siempre 0 s y `enviar.php` responde 429 a todos los mensajes reales. Es un fallo silencioso: en local con `mailto:` no se nota.
 - Pendiente en el panel de Cloudflare Pages: fijar build command `sh build.sh` y output `dist`.
 - El envío por `mail()` depende del servidor; si cae en spam, migrar a SMTP (PHPMailer) — hay un TODO en `enviar.php`.
 - `enviar.php` limita por IP priorizando `CF-Connecting-IP` / `X-Real-IP` sobre `REMOTE_ADDR`, para no aplicar un cupo global cuando hay un proxy delante.

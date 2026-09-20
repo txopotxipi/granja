@@ -65,6 +65,17 @@
         "Pasar la bateria de pruebas completa antes de empujar, no despues.",
         "Despues del push, confirmar contra el servidor con `git ls-remote origin <rama>` o la API de GitHub. No basta con que `git push` diga OK."
       ]
+    },
+    {
+      "id": "cabeceras-de-pages-no-se-solapan",
+      "titulo": "No solapar reglas de cache en _headers (Cloudflare Pages las concatena)",
+      "cuando": "Al anadir o tocar reglas de cache en _headers para Cloudflare Pages.",
+      "por_que": "Pages aplica TODAS las reglas que coinciden y CONCATENA sus cabeceras: no hay 'gana la ultima'. Comprobado en produccion el 2026-09-20: con /assets/* (7 dias) y /assets/fonts/* (1 ano immutable), una fuente respondia 'Cache-Control: public, max-age=604800, public, max-age=31536000, immutable'. El comentario del archivo afirmaba justo lo contrario y el fallo solo se ve mirando la respuesta real del servidor, no el codigo.",
+      "pasos": [
+        "Una regla por carpeta: /assets/css/*, /assets/js/*, /assets/img/*, /assets/fonts/*. Si aparece una carpeta nueva bajo assets/, darle la suya.",
+        "Comprobar SIEMPRE contra el sitio desplegado: curl -sI <url de una fuente> y contar los Cache-Control que salen.",
+        "En Apache el problema no existe: 'Header set' reemplaza y los <FilesMatch> de _no_ solapan (woff2 frente a css|js|webp|...). No trasladar el patron de Pages al .htaccess ni al reves."
+      ]
     }
   ]
 }

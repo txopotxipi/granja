@@ -108,9 +108,14 @@ escritos; solo tiene que pulsar enviar. **Cero dependencias y cero servidores.**
 
 El visitante **no sale de la web**: el mensaje se envía por `fetch()` y se
 confirma con el aviso emergente. Incluye validación en servidor, honeypot,
-límite de 5 envíos por IP cada 10 minutos, guarda de velocidad (descarta envíos
-de menos de 2,5 s) y UTF-8 explícito para que los acentos y las eñes no se
-corrompan en el correo.
+límite de 5 envíos por IP cada 10 minutos, guarda de velocidad (descarta los
+envíos hechos en menos de 2,5 s) y UTF-8 explícito para que los acentos y las
+eñes no se corrompan en el correo.
+
+> La guarda de velocidad se apoya en el campo `form_inicio`, que `main.js`
+> rellena **al cargar la página** (y refresca en `pageshow` y tras cada envío),
+> nunca en el `submit`: si se rellenara al enviar, la diferencia sería siempre
+> de 0 s y el servidor rechazaría con 429 hasta los mensajes de una persona.
 
 > Si el hosting es compartido, `mail()` puede caer en spam. Hay un `TODO` en el
 > propio archivo explicando cómo pasar a SMTP autenticado con PHPMailer: solo
@@ -149,6 +154,8 @@ Dos capas, según dónde viva la web:
 Pages no lee `.htaccess` ni ejecuta PHP; su equivalente son tres archivos de texto:
 
 - **`_headers`** — cabeceras de seguridad en todas las páginas (`X-Frame-Options`, `nosniff`, `Referrer-Policy`, `Permissions-Policy`) y caché por tipo: fuentes 1 año inmutables; CSS, JS e imágenes 1 semana (los nombres de archivo no llevan versión, y una caché más larga enseñaría la web vieja tras cada publicación); HTML siempre revalidado; y **`sw.js` sin caché**, porque un service worker viejo en el navegador impide que lleguen las actualizaciones.
+
+  > **Las reglas de caché no se solapan, a propósito.** Cloudflare Pages **concatena** las cabeceras de *todas* las reglas que coinciden; no hace que gane la última. Comprobado en producción el 2026-09-20: con una regla general `/assets/*`, las fuentes respondían `Cache-Control: public, max-age=604800, public, max-age=31536000, immutable` (dos valores, sin que quede claro cuál manda). Por eso hay una regla por carpeta (`/assets/css/*`, `/assets/js/*`, `/assets/img/*`, `/assets/fonts/*`): si algún día añades una carpeta nueva bajo `assets/`, dale la suya en vez de cubrirla con una regla general.
 - **`404.html`** — Cloudflare la sirve con estado 404 real. Sin ella, cualquier ruta inexistente responde 200 con la portada («soft-404»): mal para el SEO y enmascara las imágenes rotas.
 - **`.assetsignore`** — red de seguridad: Cloudflare Pages excluye del despliegue los archivos internos (`.agents/`, `*.md`, `AGENTS.md`, `enviar.php`, `tmp-log/`, `build.sh`, `.git/`) aunque el directorio de salida fuese la raíz del repositorio. Comprobado en producción: sin este archivo, `AGENTS.md` y `.agents/` eran accesibles por URL.
 - **`build.sh` + `dist/`** — el build copia a producción solo lo público (`index.html`, `legal.html`, `assets/`, `robots.txt`, `sitemap.xml`, `_headers`, `404.html`). Los archivos internos (`.agents/`, `*.md`, `.htaccess`, `enviar.php`, `tmp-log/`) nunca salen del repositorio.

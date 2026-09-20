@@ -14,6 +14,7 @@
 .agents
 AGENTS.md
 .workbuddy-ai
+.freebuff
 
 # Documentación interna
 *.md

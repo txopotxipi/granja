@@ -16,9 +16,10 @@ desktop.ini
 .idea/
 .claude/
 
-# Estado local de la herramienta de IA (memoria de sesión, no es código fuente).
+# Estado local de las herramientas de IA (memoria de sesión, no es código fuente).
 # El conocimiento duradero del proyecto vive versionado en .agents/memory/.
 .workbuddy-ai/
+.freebuff/
 
 # Python / cachés
 __pycache__/
