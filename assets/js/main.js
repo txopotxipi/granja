@@ -185,9 +185,9 @@ document.querySelectorAll('[data-producto]').forEach(btn => {
    Ración media: 150 g de carne por persona y comida.
    ============================================================ */
 const PRECIO  = { piezas: 9.00, media: 6.80, entera: 5.90 };
-const PESO    = { piezas: 0,    media: 45,   entera: 90   };
+const PESO    = { piezas: 0,    media: 45,   entera: 90   };   // kg por pieza (0 = al peso)
 const NOMBRE  = { piezas: 'Piezas sueltas', media: 'Media canal', entera: 'Canal entera' };
-const RACION  = 0.15;
+const RACION  = 0.15;   // kg de carne por persona y comida
 
 const calcPersonas  = document.getElementById('calcPersonas');
 const calcRaciones  = document.getElementById('calcRaciones');
@@ -197,8 +197,38 @@ const calcNota      = document.getElementById('calcNota');
 const eur = n => n.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' €';
 const kg  = n => n.toLocaleString('es-ES', {maximumFractionDigits:1}) + ' kg';
 
+/* Los precios del selector de formato ("9,00 €/kg") salen de PRECIO, no del
+   HTML: cambiar la constante cambia la web entera. En el HTML quedan como
+   texto de partida, para que la página siga siendo legible sin JavaScript. */
+document.querySelectorAll('input[name="calcFormato"]').forEach(radio => {
+  const etiqueta = radio.closest('.seg-item').querySelector('small');
+  if(etiqueta) etiqueta.textContent = eur(PRECIO[radio.value]) + '/kg';
+});
+
 function formatoElegido(){
   return document.querySelector('input[name="calcFormato"]:checked').value;
+}
+
+/**
+ * Coste real de un formato para un consumo dado. La media canal y la canal
+ * entera se venden por piezas completas, así que hay que contar CUÁNTAS
+ * hacen falta: con 150 kg al año, una canal entera de 90 kg no llega y el
+ * coste es el de dos piezas, no el de una. Las piezas sueltas van al peso
+ * exacto, sin sobrantes.
+ */
+function costeDe(formato, consumo){
+  const peso = PESO[formato];
+  if(!peso) return consumo * PRECIO.piezas;
+  return Math.max(1, Math.ceil(consumo / peso)) * peso * PRECIO[formato];
+}
+
+/* Cómo se pide el formato elegido en los mensajes que salen de la web
+   (WhatsApp y formulario): "2 piezas de 90 kg (180 kg en total)" o "al peso". */
+function pedidoEnTexto({ formato, piezas, kgFormato }){
+  if(!PESO[formato]) return 'al peso';
+  return piezas > 1
+    ? `${piezas} piezas de ${kg(PESO[formato])} (${kg(kgFormato)} en total)`
+    : kg(PESO[formato]);
 }
 
 function calcular(){
@@ -212,52 +242,79 @@ function calcular(){
   // Consumo anual estimado
   const consumo = Math.round(personas * raciones * RACION * 52);
 
-  // Formato que mejor encaja según el consumo
-  let recomendado = 'piezas';
-  if(consumo >= 70) recomendado = 'entera';
-  else if(consumo >= 25) recomendado = 'media';
+  // Formato que mejor encaja: el que sale más barato DE VERDAD a ese
+  // consumo. No sirve mirar el precio por kilo de la etiqueta, porque las
+  // piezas enteras se compran completas: con poco consumo, 9 €/kg al peso
+  // sale mejor que una canal entera a 5,90 €/kg que no se aprovecha.
+  // En caso de empate gana el primero de la lista, que es el que menos kg
+  // deja de sobra.
+  const recomendado = ['piezas', 'media', 'entera']
+    .reduce((mejor, f) => costeDe(f, consumo) < costeDe(mejor, consumo) ? f : mejor);
 
   const costePiezas  = consumo * PRECIO.piezas;
   const pesoFormato  = PESO[formato];
-  const costeFormato = pesoFormato ? pesoFormato * PRECIO[formato] : costePiezas;
+  const piezas       = pesoFormato ? Math.max(1, Math.ceil(consumo / pesoFormato)) : 0;
+  const kgFormato    = pesoFormato ? piezas * pesoFormato : consumo;
+  const costeFormato = costeDe(formato, consumo);
   const ahorro       = costePiezas - costeFormato;
 
   calcKg.textContent = consumo;
   document.getElementById('calcFormatoRec').textContent = NOMBRE[recomendado];
-  document.getElementById('calcPeso').textContent    = pesoFormato ? kg(pesoFormato) : 'Al peso';
-  document.getElementById('calcCoste').textContent   = eur(costeFormato);
-  document.getElementById('calcEfectivo').textContent = eur(PRECIO[formato]) + '/kg';
+  document.getElementById('calcPesoEtiqueta').textContent = piezas > 1 ? 'Piezas necesarias' : 'Peso de la pieza';
+  document.getElementById('calcPeso').textContent = !pesoFormato
+    ? 'Al peso'
+    : (piezas > 1 ? `${piezas} × ${kg(pesoFormato)}` : kg(pesoFormato));
+  document.getElementById('calcCoste').textContent = eur(costeFormato);
+  // Precio por kilo de lo que se compra: en piezas sueltas es el precio al
+  // peso y en piezas enteras, el del formato (todo lo comprado se paga).
+  document.getElementById('calcEfectivo').textContent = eur(costeFormato / kgFormato) + '/kg';
 
-  // El ahorro siempre se mide contra comprar piezas sueltas. Si el
-  // visitante ya está en piezas sueltas, no hay nada que restar: lo útil
-  // es decirle cuánto se ahorraría si cambiara al formato recomendado.
+  // El ahorro siempre se mide contra comprar la misma cantidad al peso. Si el
+  // visitante ya está en piezas sueltas, no hay nada que restar: lo útil es
+  // decirle cuánto se ahorraría si cambiara al formato recomendado.
   const ddAhorro = document.getElementById('calcAhorro');
   const dtAhorro = document.getElementById('calcAhorroEtiqueta');
   if(formato === 'piezas' && recomendado !== 'piezas'){
     dtAhorro.textContent = `Ahorrarías con ${NOMBRE[recomendado].toLowerCase()}`;
-    ddAhorro.textContent = eur(costePiezas - PESO[recomendado] * PRECIO[recomendado]);
+    ddAhorro.textContent = eur(costePiezas - costeDe(recomendado, consumo));
   } else if(formato === 'piezas'){
     dtAhorro.textContent = 'Ahorro frente a piezas sueltas';
     ddAhorro.textContent = '—';
-  } else {
+  } else if(ahorro >= 0){
     dtAhorro.textContent = 'Ahorro frente a piezas sueltas';
     ddAhorro.textContent = eur(ahorro);
+  } else {
+    // Una pieza entera que no se aprovecha sale más caro que comprar al
+    // peso. Se dice en positivo, que se entiende mejor que un número
+    // negativo.
+    dtAhorro.textContent = 'Comprar al peso te ahorraría';
+    ddAhorro.textContent = eur(-ahorro);
   }
 
-  // Nota contextual: avisa si el formato elegido no encaja con el consumo
+  // Nota contextual: se construye con los mismos números que se ven arriba,
+  // así que no puede contradecirlos. Primero, lo que de verdad hay que
+  // comprar (y lo que sobra, si sobra); después, la alternativa más barata,
+  // si existe. En piezas sueltas esa alternativa ya está en la línea de
+  // arriba («Ahorrarías con…»), así que aquí no se repite.
+  const alternativa = formato !== 'piezas' && recomendado !== formato
+    ? ` Para tu consumo sale mejor ${NOMBRE[recomendado].toLowerCase()}: ${eur(costeDe(recomendado, consumo))}.`
+    : '';
   let nota;
-  if(pesoFormato && consumo < pesoFormato * .75){
-    nota = `Una ${NOMBRE[formato].toLowerCase()} son unos ${kg(pesoFormato)}: te sobrarían unos ${kg(Math.round(pesoFormato - consumo))}. Se conserva congelada y en embutidos, pero quizá te encaje mejor ${NOMBRE[recomendado].toLowerCase()}.`;
-  } else if(pesoFormato && consumo > pesoFormato){
-    nota = `Con ${NOMBRE[formato].toLowerCase()} te quedarías corto: calculas unos ${kg(consumo)} al año. Te encajaría mejor ${NOMBRE[recomendado].toLowerCase()}.`;
-  } else if(recomendado !== formato){
-    nota = `Para tu consumo, lo que mejor encaja es ${NOMBRE[recomendado].toLowerCase()}.`;
+  if(!pesoFormato){
+    nota = `Compras al peso, sin sobrantes: unos ${kg(consumo)} al año.` + alternativa;
+  } else if(piezas === 1){
+    nota = `Una ${NOMBRE[formato].toLowerCase()} son unos ${kg(pesoFormato)}: `
+         + (consumo < pesoFormato
+             ? `te sobrarían unos ${kg(pesoFormato - consumo)}, que se conservan congelados y en embutidos.`
+             : 'te cubre el año entero.')
+         + alternativa;
   } else {
-    nota = 'Buena elección: es el formato que mejor encaja con tu consumo.';
+    nota = `Con ${kg(consumo)} al año una pieza no te llega: necesitas ${piezas} piezas de ${kg(pesoFormato)} `
+         + `(${kg(kgFormato)} en total), unos ${eur(costeFormato)}.` + alternativa;
   }
   calcNota.textContent = nota;
 
-  return { consumo, formato, personas };
+  return { consumo, formato, personas, piezas, kgFormato, costeFormato };
 }
 
 if(calcPersonas){
@@ -278,21 +335,23 @@ function abrirWhatsApp(texto){
 const calcPedir = document.getElementById('calcPedir');
 if(calcPedir){
   calcPedir.addEventListener('click', () => {
-    const { consumo, formato, personas } = calcular();
+    const { consumo, formato, personas, piezas, kgFormato, costeFormato } = calcular();
     abrirWhatsApp(
       `Hola, he usado la calculadora de la web de Granja Piloño.\n\n` +
       `Somos ${personas} en casa y calculo unos ${consumo} kg de cerdo al año.\n` +
-      `Me interesa: ${NOMBRE[formato]} (${PESO[formato] ? kg(PESO[formato]) : 'al peso'}).\n\n` +
+      `Me interesa: ${NOMBRE[formato]} (${pedidoEnTexto({ formato, piezas, kgFormato })}).\n` +
+      `Con la calculadora me sale por unos ${eur(costeFormato)}.\n\n` +
       `¿Me confirmáis precio y disponibilidad?`
     );
   });
 
   document.getElementById('calcFormulario').addEventListener('click', e => {
-    const { consumo, formato, personas } = calcular();
+    const { consumo, formato, personas, piezas, kgFormato, costeFormato } = calcular();
     asunto.value = 'Cerdo entero por encargo';
     document.getElementById('mensaje').value =
       `Hola, he usado la calculadora: somos ${personas} en casa y calculo unos ${consumo} kg de cerdo al año. ` +
-      `Me interesa ${NOMBRE[formato].toLowerCase()} (${PESO[formato] ? kg(PESO[formato]) : 'al peso'}). ¿Me confirmáis precio y disponibilidad?`;
+      `Me interesa ${NOMBRE[formato].toLowerCase()} (${pedidoEnTexto({ formato, piezas, kgFormato })}), unos ${eur(costeFormato)}. ` +
+      `¿Me confirmáis precio y disponibilidad?`;
     llevarAlFormulario(e.currentTarget);
   });
 }
@@ -439,6 +498,20 @@ pasos.forEach(p => ioPasos.observe(p));
 /* ============================================================
    FORMULARIO: validación inline + envío + toast
    ============================================================ */
+
+/* --- Marca de tiempo para el antispam de enviar.php ---
+   enviar.php descarta los envíos hechos en menos de 2,5 s desde esta marca:
+   eso es un bot, no una persona. Por eso la marca se pone al CARGAR la
+   página, no al enviar — si se pusiera al enviar, la diferencia sería
+   siempre de 0 s y el servidor rechazaría hasta los mensajes de una persona.
+   `pageshow` la refresca cuando el navegador restaura la página desde su
+   caché (bfcache): ahí el HTML vuelve tal cual estaba, con la marca de una
+   visita anterior. */
+const formInicio = document.getElementById('form_inicio');
+function marcarInicio(){ if(formInicio) formInicio.value = Date.now(); }
+marcarInicio();
+addEventListener('pageshow', marcarInicio);
+
 const toast = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
 let toastTimer;
@@ -474,14 +547,11 @@ formulario.addEventListener('submit', e => {
   if(privacidad && !privacidad.checked){ marcarCampo(privacidad, 'Debes aceptar la política de privacidad.'); ok = false; }
   if(!ok) return;
 
-  // Marca de tiempo para el antispam del servidor (enviar.php descarta
-  // los envíos hechos en menos de 2,5 s: eso es un bot, no una persona).
-  document.getElementById('form_inicio').value = Date.now();
-
   // Honeypot (ahora en el navegador): si el campo trampa llega relleno es
   // un bot; fingimos éxito y no hacemos nada. Nadie nota la diferencia.
   if(document.getElementById('web').value.trim() !== ''){
     formulario.reset();
+    marcarInicio();
     mostrarToast('¡Mensaje enviado! Te respondemos en 24–48 h.');
     return;
   }
@@ -506,6 +576,7 @@ formulario.addEventListener('submit', e => {
       .then(res => {
         if(res && res.ok === false) throw 0;
         formulario.reset();
+        marcarInicio();
         mostrarToast('¡Mensaje enviado! Te respondemos en 24–48 h.');
       })
       .catch(() => mostrarToast('No se pudo enviar. Escríbenos a ' + DESTINO_EMAIL))
@@ -517,6 +588,7 @@ formulario.addEventListener('submit', e => {
     mensaje.value.trim() + '\n\n— ' + nombre.value.trim() + ' · ' + email.value.trim()
   );
   mostrarToast('Abriendo tu correo… si no se abre, escríbenos a ' + DESTINO_EMAIL);
+  marcarInicio();
   window.location.href = 'mailto:' + DESTINO_EMAIL + '?subject=' + titulo + '&body=' + cuerpoMail;
 });
 

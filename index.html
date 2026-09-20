@@ -513,6 +513,9 @@
 
         <fieldset class="calc-formato">
           <legend>Formato de compra</legend>
+          <!-- Los precios de cada formato los escribe main.js a partir de la
+               constante PRECIO. Aquí quedan como texto de partida para que
+               la página siga siendo legible sin JavaScript. -->
           <div class="segmentado">
             <label class="seg-item">
               <input type="radio" name="calcFormato" value="piezas" checked>
@@ -536,7 +539,7 @@
 
         <dl class="calc-datos">
           <div><dt>Formato recomendado</dt><dd id="calcFormatoRec">—</dd></div>
-          <div><dt>Peso de la pieza</dt><dd id="calcPeso">—</dd></div>
+          <div><dt id="calcPesoEtiqueta">Peso de la pieza</dt><dd id="calcPeso">—</dd></div>
           <div><dt>Coste estimado</dt><dd id="calcCoste">—</dd></div>
           <div><dt>Precio efectivo</dt><dd id="calcEfectivo">—</dd></div>
           <div class="destacado"><dt id="calcAhorroEtiqueta">Ahorro frente a piezas sueltas</dt><dd id="calcAhorro">—</dd></div>
@@ -657,6 +660,9 @@
       </div>
 
       <form class="reserva-form" id="reservaForm" novalidate>
+        <noscript>
+          <p class="form-noscript">La lista de sábados y la reserva necesitan JavaScript. Escríbenos a <a href="mailto:hola@granjapilono.es">hola@granjapilono.es</a> o por WhatsApp al <a href="https://wa.me/34600000000" target="_blank" rel="noopener">+34 600 000 000</a>, dinos qué sábado te encaja y te lo reservamos igual.</p>
+        </noscript>
         <div class="campo">
           <label for="reservaDia">Elige un sábado</label>
           <select id="reservaDia" name="reservaDia"></select>
@@ -786,7 +792,7 @@
   </div>
 </section>
 
-<!-- ============ 07 · CONTACTO ============ -->
+<!-- ============ 08 · CONTACTO ============ -->
 <section id="contacto">
   <div class="wrap">
     <header class="sec-head reveal">
